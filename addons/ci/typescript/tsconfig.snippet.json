@@ -1,0 +1,6 @@
+{
+  "//": "Merge into the repo tsconfig.json. The tests need Node types for child_process, fs and path.",
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  }
+}

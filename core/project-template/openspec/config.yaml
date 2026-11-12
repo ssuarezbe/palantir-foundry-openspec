@@ -1,0 +1,25 @@
+schema: foundry-spec-driven
+
+context: |
+  This project builds on Palantir Foundry. The Foundry Ontology is the business model.
+  Specs use terms from openspec/glossary.md verbatim. Never use a forbidden synonym.
+  Add every new domain noun to openspec/glossary.md in the same change that introduces it.
+  Refer to Ontology object types and action types by API name. Do not redefine them in specs.
+  Write all artifacts in plain, short, imperative English.
+
+rules:
+  proposal:
+    - Fill "Glossary changes" for every new or changed domain term. Write "None" if there are none.
+    - Use glossary terms verbatim.
+  specs:
+    - Use glossary terms verbatim. Never use a forbidden synonym from the glossary.
+    - 'When a requirement touches an Ontology object type or action type, add one line "Ontology: <ApiName>" under the requirement text.'
+    - Every Ontology API name must exist in the Ontology. Confirm it before you write it.
+    - 'Write every scenario in Gherkin form: bold GIVEN, WHEN, THEN lines, with AND or BUT to continue a step. One behavior per scenario, exactly one WHEN, business language, no UI or code detail. Same steps with different data: use <placeholder> and an Examples table.'
+    - 'When several repositories or Foundry resources implement a requirement, add one line under the requirement text: "Implemented in: <ontology action, function, app>".'
+  design:
+    - Fill "Foundry resources" with API names. Write "None" if the change touches no Foundry resource.
+  tasks:
+    - 'Under each task checkbox add one indented line: "- **Verify:** GIVEN <state>; WHEN <action>; THEN <result>." Or cite the spec scenario by name.'
+    - When the change spans several repositories, make one task group per repository, ordered by dependency (Ontology, then functions, then apps). Name the repository in the group heading.
+    - Add a task to update openspec/glossary.md when the proposal lists glossary changes.

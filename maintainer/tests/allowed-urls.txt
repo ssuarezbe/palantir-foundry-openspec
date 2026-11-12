@@ -1,0 +1,6 @@
+# Regex, one per line. A URL anywhere in the repo (outside upstream/, the bundle and the Jest harness) must match one.
+^https://github\.com/Fission-AI/OpenSpec(/.*)?$
+^https://opensource\.org/licenses/MIT$
+^https://www\.palantir\.com/docs/foundry/.*$
+^https://palantir\.com/docs/foundry/.*$
+^https://openspec\.dev/docs/.*$

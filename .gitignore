@@ -147,3 +147,8 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# palantir-foundry-openspec
+maintainer/tests/jest-env/node_modules/
+*.zip
+!/addons/cli/openspec-1.16.0/dist/

@@ -1,0 +1,4 @@
+# This repository keeps no specs of its own. Every change goes to the store.
+# Replace product-specs with your store id. Register the store on each machine first:
+#   tools/openspec/launchers/openspec store register <path-to-spec-home> --id product-specs --yes
+store: product-specs

@@ -1,0 +1,9 @@
+#!/bin/sh
+# Runs the bundled OpenSpec CLI with telemetry off. Needs Node 20+ on PATH.
+OPENSPEC_TELEMETRY=0
+export OPENSPEC_TELEMETRY
+if ! command -v node >/dev/null 2>&1; then
+  echo "openspec: node not found. Use Route B or C in docs/01-routes.md." >&2
+  exit 127
+fi
+exec node "$(dirname "$0")/../openspec-1.16.0/dist/cli/openspec.mjs" "$@"

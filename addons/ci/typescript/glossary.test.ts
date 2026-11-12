@@ -19,7 +19,7 @@ const root = findRoot();
 const glossaryPath = path.join(root, "openspec", "glossary.md");
 const ontologyPath = path.join(root, "openspec", "ontology.json");
 
-interface Row { term: string; definition: string; api: string; synonyms: string[] }
+interface Row { term: string; definition: string; api: string[]; synonyms: string[] }
 
 function parseGlossary(): Row[] {
   if (!fs.existsSync(glossaryPath)) throw new Error("openspec/glossary.md not found");
@@ -34,7 +34,7 @@ function parseGlossary(): Row[] {
     rows.push({
       term: cells[0],
       definition: cells[1] || "",
-      api: (cells[2] || "").replace(/`/g, ""),
+      api: (cells[2] || "").replace(/`/g, "").split(",").map((s) => s.trim()).filter(Boolean),
       synonyms: (cells[3] || "").split(",").map((s) => s.trim()).filter(Boolean),
     });
   }
@@ -87,6 +87,8 @@ const rows = satellite ? [] : parseGlossary();
       for (const r of rows) for (const syn of r.synonyms) {
         const re = new RegExp("\\b" + syn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b", "i");
         lines.forEach((l, i) => {
+          // API names may equal a forbidden word: the concept and the resource are different things
+          if (/^\s*(Ontology|Implemented in):/.test(l)) return;
           if (re.test(l)) bad.push(`forbidden synonym '${syn}' (use '${r.term}') in ${rel(f)}:${i + 1}`);
         });
       }
@@ -99,8 +101,10 @@ const rows = satellite ? [] : parseGlossary();
     const known = new Set<string>(JSON.parse(fs.readFileSync(ontologyPath, "utf8")));
     const bad: string[] = [];
     for (const r of rows) {
-      if (r.api && r.api.toLowerCase() !== "not modelled" && !known.has(r.api)) {
-        bad.push(`glossary API name '${r.api}' is not in openspec/ontology.json (term '${r.term}')`);
+      for (const name of r.api) {
+        if (name.toLowerCase() !== "not modelled" && !known.has(name)) {
+          bad.push(`glossary API name '${name}' is not in openspec/ontology.json (term '${r.term}')`);
+        }
       }
     }
     for (const f of specFiles()) {

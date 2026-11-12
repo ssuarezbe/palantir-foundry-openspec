@@ -12,12 +12,14 @@ Finish a change. Merge its delta specs into the main specs, then move the change
    - Use the name the user gave.
    - Otherwise list the folders in `openspec/changes/`, skipping `archive/`. Ask which one. Do not guess.
    - Say: "Using change: <name>".
-3. Check the files. In `openspec/changes/<name>/` look for `proposal.md`, `specs/`, `design.md`, `tasks.md`.
+3. Check the files. In `openspec/changes/<name>/` look for `proposal.md`, `specs/`, `design.md`, `ontology.md`, `data.md`, `logic.md`, `open-questions.md`, `tasks.md`.
    - If `.openspec.yaml` has no `skip_specs: true` and `specs/` has no `spec.md`, warn the user.
 4. Count the boxes in `tasks.md`. `- [x]` is done. Anything else is open.
    - If any are open, list them. Ask: "Archive anyway?" Continue only on a clear yes.
-5. Read the scenarios in the delta specs. Ask: "Do these still describe what was built?" If the work changed the behavior, stop. Fix the delta first (back to the OpenSpec Propose skill), then archive.
-6. Read `openspec/glossary.md`. If the proposal's Glossary changes list terms, confirm each is in the glossary. If not, stop and ask the user to add them in this change.
+5. Read `open-questions.md`. List every row that is still `open` or `assumed`. Ask: "Archive with these open?" Continue only on a clear yes, and say they stay in the archived folder. Stop if a blocking row is open.
+6. Read `ontology.md`, `data.md` and `logic.md`. Ask: "Do these still match what was built?" Check the "Design review" table: every deviation still true, no new anti-pattern. If not, fix them first.
+7. Read the scenarios in the delta specs. Ask: "Do these still describe what was built?" If the work changed the behavior, stop. Fix the delta first (back to the OpenSpec Propose skill), then archive.
+8. Read `openspec/glossary.md`. If the proposal's Glossary changes list terms, confirm each is in the glossary. If not, stop and ask the user to add them in this change.
 
 ## Confirm the work has merged
 

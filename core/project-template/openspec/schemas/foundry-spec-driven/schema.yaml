@@ -1,6 +1,6 @@
 name: foundry-spec-driven
-version: 1
-description: Foundry workflow - proposal → specs and design → tasks. Adds glossary, Ontology and Foundry resource sections.
+version: 2
+description: Foundry workflow - proposal → specs, design, ontology, data and logic → tasks. Adds glossary, Ontology, logic, data and an open questions log.
 artifacts:
   - id: proposal
     generates: proposal.md
@@ -15,8 +15,10 @@ artifacts:
       - **Capabilities**: Identify which specs will be created or modified:
         - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<capability-path>/spec.md`. Name each capability for a durable system behavior (for example, `user-auth`), not the work in this change (for example, `add-login-endpoint`). Choose a cohesive boundary that can own related requirements as the system evolves; avoid broad catch-all capabilities. Use kebab-case for path segments you introduce (e.g., `user-auth` or `identity/user-auth`) and follow the project's existing spec organization.
         - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Use the exact existing path under `openspec/specs/`. Leave empty if no requirement changes.
-      - **Glossary changes**: New or changed domain terms. Check `openspec/glossary.md` first and use its terms verbatim. Add every new domain noun to the glossary in this same change. Write "None" if there are no changes.
+      - **Glossary changes**: New or changed domain terms. Check `openspec/glossary.md` first and use its terms verbatim. Add every new domain noun to the glossary in this same change. A term is a business concept: give the Ontology resources (object types, link types, action types) that represent it, one or several, or "not modelled". Write "None" if there are no changes.
       - **Impact**: Affected code, APIs, dependencies, or systems.
+
+      Also create `open-questions.md` now (see that artifact). Record every gap you could not close while writing the proposal.
 
       IMPORTANT: The Capabilities section is critical. It creates the contract between
       proposal and specs phases. Research existing specs before filling this in:
@@ -74,9 +76,13 @@ artifacts:
 
       Foundry rules:
       - Use terms from `openspec/glossary.md` verbatim. Never use a term listed as a forbidden synonym.
-      - When a requirement reads or changes an Ontology object type or action type, add one line under the requirement text: `Ontology: <ApiName>`. Use the API name exactly. Do not redefine the object type in the spec.
+      - When a requirement reads or changes an Ontology object type or action type, add one line under the requirement text: `Ontology: <ApiName>`, or several names separated by commas when the behavior touches several object, link or action types. Use the API names exactly. Do not redefine the object type in the spec.
       - Leave the line out when the requirement touches no Ontology resource.
       - When more than one repository or Foundry resource implements the requirement, add one line: `Implemented in: <ontology action, function, app>`. Name each place. Omit it for a single-repository project.
+
+      - A glossary term (business concept) is not an Ontology resource. One term can map to several object types and link types, and one object type can serve several terms. Write the behavior in glossary terms and list the resources on the `Ontology:` line.
+      - Every `Ontology:` name must be an existing Ontology resource or appear in `ontology.md` or `logic.md` of this change.
+      - Add a row to `open-questions.md` (stage `specs`) for every behavior you could not specify, instead of guessing.
 
       Gherkin scenarios:
       - Write every scenario in Gherkin keyword form, one step per line, keywords in bold capitals: `- **GIVEN** <context>`, `- **WHEN** <one trigger>`, `- **THEN** <observable outcome>`. Continue a step with `- **AND** ...` or `- **BUT** ...`. Keep the English keywords, because validation looks for them. The step text may be in any language.
@@ -193,15 +199,12 @@ artifacts:
       - **Context**: Only the current state and constraints needed to explain the approach. Reference the proposal for motivation instead of restating it (e.g., "See proposal.md - Why").
       - **Goals / Non-Goals**: What this design achieves and explicitly excludes. Don't restate the proposal's scope - add only design-level boundaries.
       - **Decisions**: Key technical choices with rationale (why X over Y?). Include alternatives considered for each decision.
-      - **Foundry resources**: Datasets, transforms, object types, action types and functions this change adds, changes or reads. Use API names. Write "None" if the change touches no Foundry resource.
+      - **Foundry resources**: A short summary with pointers to `ontology.md`, `logic.md` and `data.md`. Do not repeat their tables. Write "None" if the change touches no Foundry resource.
       - **Risks / Trade-offs**: Known limitations, things that could go wrong. Format: [Risk] → Mitigation
       - **Migration Plan**: Steps to deploy, rollback strategy (if applicable)
-      - **Open Questions**: Unknowns that can safely be answered later without
-        changing the specs, the approach, or the task breakdown. Omit if none.
 
-      Open questions are for genuinely deferrable unknowns, not decisions you
-      skipped. If a question would change the specs, the chosen approach, or
-      the task breakdown, resolve it now - ask the user instead of guessing.
+      Do not write an Open Questions section here. Record every unknown as a row in `open-questions.md` (stage `design`).
+      Mark it Blocking = yes if the answer would change the specs, the chosen approach, or the task breakdown, and ask the user instead of guessing.
 
       Focus on architecture and approach, not line-by-line implementation.
       The proposal covers why and what; design covers how. Reference the
@@ -212,6 +215,89 @@ artifacts:
     requires:
       - proposal
 
+  - id: ontology
+    generates: ontology.md
+    description: Object types, link types and access this change adds, changes or reads
+    template: ontology.md
+    instruction: |
+      Create the Ontology document: the data model this change touches.
+
+      First read `openspec/ontology-design.md` and apply it. It holds Palantir's Ontology design rules: naming, object type granularity, properties and primary keys, structs, links, interfaces, security, governance and the anti-patterns. Then check your model against it and fill the "Design review" table with every rule you break, the reason and when you will revisit it. Write "No deviations" if none. Reject the anti-patterns: system silos, department silos, kitchen sink, god object, golden hammer, action sprawl, time machine, misnomer.
+
+      - Scope: the Ontology (space) name, private or shared, whether it is packaged in Marketplace, and who owns the core types. An Ontology maps 1:1 to a space, and links cannot cross Ontologies.
+
+      - List every object type, link type and access rule the change adds, changes or reads. Use the API name exactly as in Ontology Manager. Confirm each existing name with the Ontology tools you have, `openspec/ontology.json` if present, or the user.
+      - Status is `new`, `changed` or `read`. For `read`, give only the API name and why it is needed. Do not redefine existing types.
+      - Give the glossary term on every object type, link type and action row. A business concept can need several object types and link types: list each one with the same term. Write "not modelled" if no term fits. If the concept is new, add its term to `openspec/glossary.md` in this change. The glossary row for a term must list every resource that represents it.
+      - For a new or changed object type: primary key, backing dataset (it must appear in `data.md`) and properties with types.
+      - Use API names, never RIDs: RIDs differ between environments. Give each object type a display name and a one-sentence description so people and agents can find it. Name overlapping concepts once: if two object types look alike, say how they differ or merge them.
+      - For each property, give the unit, and the date or aggregation rule where it matters. Unclear granularity, units or dates give inconsistent answers.
+      - For a link type: the API name of each side, both ends, cardinality, status, and how it is stored. A one-to-one or one-to-many link is a foreign key property on one object type. A many-to-many link needs a join dataset, which must appear in `data.md`. Use an object-backed link type when the relationship has data of its own. A link reflects a real business relationship, not a source-system join.
+      - Interfaces and shared properties: list any shape that several object types implement, and any property whose metadata is managed once. Write "None" if unused.
+      - Value types: list reusable semantic types with their constraint in words. Write "None" if unused.
+      - Choose the primary key type with care: String, Integer or Short are preferred. Mark derived and denormalized properties and give the source of truth.
+      - Questions this model must answer: list the business questions, each as situation, contributing factors, impact, with the object and link types used. Write at least one spec scenario for each. A manual export or join that people rely on today usually means a missing link.
+      - Access: markings, restricted views, row-level and column-level rules, roles. Say who is covered: users, groups and AI agents (agents inherit permissions from the user or project). Write "Unchanged" if none.
+      - Write "None" under a heading with nothing to record. If the change touches no Ontology resource, every heading says "None".
+      - Add a row to `open-questions.md` (stage `ontology`) for every name, key, type or rule you could not confirm.
+
+      Keep it a model, not an implementation: no transform code, no function bodies.
+    requires:
+      - proposal
+
+  - id: data
+    generates: data.md
+    description: Datasets, transforms and data quality checks this change adds, changes or reads
+    template: data.md
+    instruction: |
+      Create the data document: where data comes from and how it reaches the Ontology.
+
+      - Datasets: name, kind (dataset, virtual table or model), status (`new`, `changed`, `read`), source system or upstream dataset, columns with types, update cadence, owner team.
+      - Transforms and pipelines: name, tool (Pipeline Builder, Python, SQL), inputs, outputs, trigger or schedule.
+      - Data quality: one row per check (for example not-null on a primary key, freshness) with its threshold in words.
+      - Every dataset that backs an object type in `ontology.md` appears here.
+      - No credentials, connection strings or customer data. Name sources by system, not by secret.
+      - Write "None" under a heading with nothing to record.
+      - Add a row to `open-questions.md` (stage `data`) for every unknown source, column or cadence.
+    requires:
+      - proposal
+
+  - id: logic
+    generates: logic.md
+    description: Actions, functions and AIP Logic this change adds, changes or reads
+    template: logic.md
+    instruction: |
+      Create the logic document: the behavior that changes the Ontology or reads it.
+
+      First read `openspec/ontology-design.md` (sections 6 and 7). Design actions around business operations, not single properties. Choose actions for decisions, pipelines for batch and streaming data work, automations for events, and functions for live complex logic.
+
+      - Actions: API name, the object and link types it edits (they must be in `ontology.md` or exist), parameters, the rules it uses (create, modify, delete, link, function), submission criteria in words (who may run it and what must be true), side effects (notification, webhook, schedule), status (`new`, `changed`, `read`). Rules compile into one edit per object, so order matters. A function rule cannot be combined with other rules. Link rules work for many-to-many links only: change a one-to-many link through its foreign key property. Byte, float and short properties cannot be action parameters.
+      - Functions: API name, language (TypeScript or Python), inputs, output, kind (business rule, model, LLM-driven or orchestration), what it reads, the edits it returns (create, update, delete, link) per object type, who uses it, status. A function that edits changes nothing by itself: it takes effect only through a function-backed action, so name that action. Automate does not apply edits returned by a function: use an action. Object set queries inside the function read values from before its edits.
+      - Writeback: for every change that must reach a system outside Foundry, name the action or function, the target system, the mechanism (webhook, change data capture or other) and what happens when the target is down. Write "None" if the Ontology is the only record.
+      - AIP Logic and agents: name, input, output, the tools it may call (functions, actions, Ontology queries), whether a human reviews before it writes, and its evaluation cases. Cite spec scenarios as evaluation cases, for example `scenario "<name>" of <capability>`. An AIP Logic function that writes to the Ontology must go through an action.
+      - Write "None" under a heading with nothing to record.
+      - Add a row to `open-questions.md` (stage `logic`) for every unknown parameter, rule or tool.
+
+      Describe behavior contracts, not code. Scenarios stay in the specs.
+    requires:
+      - ontology
+
+  - id: open-questions
+    generates: open-questions.md
+    description: Log of knowledge gaps and open questions across every artifact
+    template: open-questions.md
+    instruction: |
+      Create and keep the open questions log. One row per knowledge gap.
+
+      - Create it with the proposal. Seed it with every gap you found while writing the proposal. If there are none, keep the table with no rows below the header and say "No open questions" under it.
+      - Columns: ID (`Q1`, `Q2`, never reused), Stage (proposal, specs, design, ontology, logic, data, tasks, apply), Question, Blocking (`yes` when the answer would change the specs, the approach, the Foundry resources or the tasks; else `no`), Affects (a file or capability), Owner (who can answer), Status, Answer.
+      - Status is `open`, `answered`, `assumed` or `dropped`. `assumed` means work continued on a stated assumption: write the assumption in Answer. Write the date in Answer when you set a status.
+      - Every later artifact adds rows for its own gaps. Never delete a row. Change its Status and fill Answer.
+      - Ask the user to answer rows that are Blocking = yes and Status = open. Do not write tasks while any such row is open.
+      - Do not invent answers. A gap you cannot close is a row, not a guess.
+    requires:
+      - proposal
+
   - id: tasks
     generates: tasks.md
     description: Implementation checklist with trackable tasks
@@ -219,9 +305,8 @@ artifacts:
     instruction: |
       Create the task list that breaks down the implementation work.
 
-      Before writing tasks, check design.md for Open Questions. If any of them
-      would change what gets built, resolve them with the user first - do not
-      bake an unstated assumption into the task list.
+      Before writing tasks, read `open-questions.md`. If any row is Blocking = yes and Status = open, stop and ask the user to answer it first - do not
+      bake an unstated assumption into the task list. Add a row for any new gap you find (stage `tasks`).
 
       **IMPORTANT: Follow the template below for tracked tasks.** The apply phase parses
       checkbox format to track progress. A box holding only `x` counts as done,
@@ -234,7 +319,7 @@ artifacts:
       - When the change spans several repositories or Foundry resources, make one group per repository (or resource) and order the groups by dependency: Ontology first, then functions, then apps that use the regenerated SDK. Name the repository in the group heading.
       - Each tracked task MUST be a checkbox: `- [ ] X.Y Task description`
       - Tasks should be small enough to complete in one session
-      - Order tasks by dependency (what must be done first?)
+      - Order tasks by dependency (what must be done first?). For Foundry work the usual order is: datasets and transforms, object and link types, actions, functions, AIP Logic, then apps. Every new or changed resource in `data.md`, `ontology.md` and `logic.md` needs at least one task.
       - Track implementation and verification work that can be completed before
         archive. If the requested workflow includes archive or work that requires
         this change to be archived, preserve those steps as plain bullets in an
@@ -282,10 +367,14 @@ artifacts:
     requires:
       - specs
       - design
+      - ontology
+      - data
+      - logic
+      - open-questions
 
 apply:
   requires: [ tasks ]
   tracks: tasks.md
   instruction: |
     Read context files, work through pending tasks, mark complete as you go.
-    Pause if you hit blockers or need clarification.
+    Pause if you hit blockers or need clarification. Stop if any row in open-questions.md is Blocking = yes and Status = open. Add a row for any new gap.

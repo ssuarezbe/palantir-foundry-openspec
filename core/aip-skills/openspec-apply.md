@@ -3,7 +3,7 @@ Description: Load when the user wants to implement the tasks of an existing chan
 
 # OpenSpec Apply
 
-Implement a change that already has `proposal.md`, specs, `design.md` and `tasks.md`. Paths are relative to the Code Repository root.
+Implement a change that already has `proposal.md`, specs, `design.md`, `ontology.md`, `data.md`, `logic.md`, `open-questions.md` and `tasks.md`. Paths are relative to the Code Repository root.
 
 ## Before you start
 
@@ -15,7 +15,8 @@ Implement a change that already has `proposal.md`, specs, `design.md` and `tasks
 3. Check the files in `openspec/changes/<name>/`.
    - `tasks.md` must exist. If it does not, stop. Tell the user to load the OpenSpec Propose skill first.
    - If `.openspec.yaml` has `skip_specs: true`, there are no spec files. That is fine.
-4. Read, in full: `proposal.md`, every `specs/**/spec.md`, `design.md` if it exists, and `tasks.md`.
+4. Read, in full: `proposal.md`, every `specs/**/spec.md`, `design.md` if it exists, `ontology.md`, `data.md`, `logic.md`, `open-questions.md` and `tasks.md`.
+   - If any row of `open-questions.md` is blocking and open, stop. Show the row. Ask the user to answer it. Do not start.
 5. Read `openspec/config.yaml` and `openspec/glossary.md`. Use glossary terms verbatim in code names, comments and messages where the domain noun appears.
 6. Count the boxes in `tasks.md`. `- [x]` is done. Anything else is open. Tell the user: "<done>/<total> tasks done."
    - All done: say so and offer the OpenSpec Archive skill. Stop.
@@ -33,7 +34,10 @@ For each open task, in file order:
 Rules:
 
 - Touch only what the task needs.
-- Where an Ontology resource is involved, use the API name from the spec's `Ontology:` line. Confirm it exists before you code against it.
+- Where an Ontology resource is involved, use the API name from the spec's `Ontology:` line, `ontology.md` or `logic.md`. Confirm it exists before you code against it.
+- Build the resources as `data.md`, `ontology.md` and `logic.md` describe them. If the work needs a different name, type, parameter or dataset, stop and fix that file first.
+- Before you build an object type, link type or action, read `openspec/ontology-design.md`. If the work needs a design rule broken, add it to the "Design review" table in `ontology.md` first.
+- Add a row to `open-questions.md` (stage `apply`) for every new gap. If it is blocking, stop and ask.
 - If the work shows the spec or design is wrong, stop. Say what is wrong. Offer to fix the artifact first. Do not silently change the specs.
 - If a task is unclear, a decision is missing, or an error blocks you, stop. Say which task and why. Ask the user. Do not guess.
 - Pause after a group if the user asked for that.

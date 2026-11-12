@@ -5,7 +5,7 @@ How to set up the kit: pick a route, set up a Foundry VS Code workspace, and add
 ## Routes
 
 Pick the route that matches the tools you have. Route A needs Node. Route B needs Python. Route C needs only AI FDE.
-All routes use the same rules: a change has a proposal, specs, a design and tasks, and the specs must pass validation.
+All routes use the same rules: a change has a proposal, specs, a design, Foundry files (`ontology.md`, `data.md`, `logic.md`), an open questions log and tasks, and the specs must pass validation.
 Tested here: route A end to end (new change, validate, archive) and route B checks. Route C skills are written and grep-tested, not run in AI FDE.
 
 ### Steps

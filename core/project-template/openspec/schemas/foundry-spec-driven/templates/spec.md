@@ -7,7 +7,7 @@
 
 ### Requirement: <!-- requirement name -->
 <!-- requirement text. Use glossary terms verbatim. -->
-<!-- Optional, one line: Ontology: <ObjectTypeOrActionTypeApiName> -->
+<!-- Optional, one line: Ontology: <ApiName>[, <ApiName>] - every object, link or action type the requirement touches -->
 <!-- Optional, one line, when several repositories implement it: Implemented in: <ontology action, function, app> -->
 
 #### Scenario: <!-- scenario name -->

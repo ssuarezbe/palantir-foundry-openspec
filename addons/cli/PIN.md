@@ -9,7 +9,7 @@
 | npm tarball SHA-1 | `580efe69fa63b5678ca9b9fc9d94de139df68915` |
 | SHA-256 of `addons/cli/openspec-1.16.0/dist/cli/openspec.mjs` | `6cc32f74b918356c2c80a1bf4208aeb72602972651f666d2f6ff107aa8ff328b` |
 | Built | 2026-11-10 |
-| Kit version | 1.16.0-foundry.4 |
+| Kit version | 1.16.0-foundry.5 |
 
 `addons/cli/SHA256SUMS` holds the same SHA-256. `maintainer/tests/run-all.sh` checks it.
 

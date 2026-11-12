@@ -16,11 +16,12 @@ OpenSpec keeps specs in the `openspec/` folder of the Code Repository. Every pat
 ## Steps
 
 1. Read `openspec/config.yaml`. Note the `context:` and `rules:` text. They override your defaults.
-2. Read `openspec/glossary.md`. Note each term, its Ontology API name and its forbidden synonyms.
-3. List the folders in `openspec/specs/`. Each folder is a capability. Open the ones that look related and read them in full.
-4. List the folders in `openspec/changes/`, skipping `archive/`. Each is an open change. Read the `proposal.md` of any that overlap.
-5. Ask the user what they want to explore. Ask one question at a time.
-6. Talk it through. Compare options. Draw small ASCII diagrams when they help. Point to real files and real specs.
+2. Read `openspec/glossary.md`. Note each term, the Ontology resources (object, link and action types, one or several) that represent it, and its forbidden synonyms.
+3. Read `openspec/ontology-design.md`. Use it to challenge the idea: one entity per object type, real relationships, no anti-patterns.
+4. List the folders in `openspec/specs/`. Each folder is a capability. Open the ones that look related and read them in full.
+5. List the folders in `openspec/changes/`, skipping `archive/`. Each is an open change. Read the `proposal.md` of any that overlap.
+6. Ask the user what they want to explore. Ask one question at a time.
+7. Talk it through. Compare options. Draw small ASCII diagrams when they help. Point to real files and real specs.
 
 ## Find where things live
 
@@ -45,6 +46,7 @@ Do this before the user proposes anything that names an Ontology object type or 
 - Match each domain noun in the discussion to a glossary term. Use the glossary term, not a synonym.
 - List nouns that have no term. These need a row in `openspec/glossary.md` in the change.
 - Flag any word the glossary lists as a forbidden synonym.
+- A term is a business concept, not an Ontology type. Ask which object types and link types represent it. One term may need several, and one object type may serve several terms. Report the mapping in your summary.
 
 ## Ending
 
@@ -54,7 +56,9 @@ When the discussion has a direction, give a short summary:
 - capabilities to add or change, named in kebab-case (for example `delay-reporting`);
 - Ontology names confirmed and not found;
 - new glossary terms;
-- open questions;
+- open questions, each as a draft row for `open-questions.md` (question, blocking yes or no, who can answer);
+- the data and logic it touches: object types, link types, datasets, actions, functions and AIP Logic, by API name, marked new, changed or read;
+- the business questions the model must answer, and which object and link types answer each (a manual export or join people use today often means a missing link);
 - two or three sketch scenarios in Gherkin form (GIVEN, WHEN, THEN), including one failure case, so the user can confirm you understood the behavior.
 
 Then offer: "Load the OpenSpec Propose skill to write the change." Do not start it yourself.

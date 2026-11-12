@@ -1,9 +1,9 @@
 Name: OpenSpec Propose
-Description: Load when the user wants a new change written: proposal, specs, design and tasks in one pass. Works with no CLI. Use the OpenSpec Explore skill first if the idea is still unclear.
+Description: Load when the user wants a new change written: proposal, specs, design, Foundry model (ontology, data, logic), open questions and tasks in one pass. Works with no CLI. Use the OpenSpec Explore skill first if the idea is still unclear.
 
 # OpenSpec Propose
 
-Create one change with all its artifacts. Specs live in `openspec/` in the Code Repository. Paths are relative to the repository root.
+Create one change with all its artifacts: proposal, specs, design, Foundry model (`ontology.md`, `data.md`, `logic.md`), open questions and tasks. Specs live in `openspec/` in the Code Repository. Paths are relative to the repository root.
 
 ## Before you start
 
@@ -11,7 +11,8 @@ Create one change with all its artifacts. Specs live in `openspec/` in the Code 
 2. Read `openspec/config.yaml`. Follow its `context:` and `rules:`.
 3. Read `openspec/glossary.md`. Use every term verbatim. Never use a forbidden synonym.
 4. Read the folders in `openspec/specs/` that relate to the idea. Read them in full.
-5. Confirm every Ontology object type and action type the change touches exists. Use the Ontology tools you have, `openspec/ontology.json` if present, or ask the user. Stop on any name you cannot confirm.
+5. Read `openspec/ontology-design.md`. Apply it to `ontology.md` and `logic.md`. Reject its anti-patterns.
+6. Confirm every Ontology object type and action type the change touches exists. Use the Ontology tools you have, `openspec/ontology.json` if present, or ask the user. Stop on any name you cannot confirm.
 
 ## Several repositories
 
@@ -41,9 +42,10 @@ If no spec behavior changes (pure refactor, tooling, docs), add the line `skip_s
 
 Write in this order. Do not start an artifact before the ones it needs exist.
 
-1. `proposal.md` (needs nothing)
-2. `specs/<capability>/spec.md`, one per capability, and `design.md` (both need the proposal)
-3. `tasks.md` (needs the specs and the design)
+1. `proposal.md` (needs nothing) and `open-questions.md` (create it now)
+2. After the proposal, in any order: `specs/<capability>/spec.md` (one per capability), `design.md`, `ontology.md`, `data.md`
+3. `logic.md` (needs `ontology.md`)
+4. `tasks.md` (needs everything above, and no blocking open question)
 
 Check which files exist before each step. Skip files that already exist unless the user asks to rewrite them.
 
@@ -53,7 +55,7 @@ Headings, in this order: `# Proposal`, `## Why`, `## What Changes`, `## Capabili
 
 - Why: one or two sentences.
 - Capabilities: one line each, `` `kebab-name`: what it covers ``. Name a lasting behavior, not the task.
-- Glossary changes: each new or changed term with its definition and API name, or "None".
+- Glossary changes: each new or changed term with its definition and the Ontology resources (one or several object, link or action type API names) that represent it, or "not modelled". Write "None" if no change.
 - Keep it to two pages.
 
 ## specs/<capability>/spec.md
@@ -65,7 +67,7 @@ Each requirement:
 ```
 ### Requirement: <name>
 The system SHALL <one behavior>.
-Ontology: <ApiName>
+Ontology: <ApiName>, <ApiName>
 
 #### Scenario: <name>
 - **GIVEN** <context>
@@ -100,13 +102,33 @@ Specs describe behavior, not code. No class names, no library choices.
 
 Headings: `# Design`, `## Context`, `## Goals / Non-Goals`, `## Decisions`, `## Foundry resources`, `## Risks / Trade-offs`. Add `## Migration Plan` and `## Open Questions` when needed.
 
-Foundry resources lists datasets, transforms, object types, action types and functions the change adds, changes or reads, by API name. Write "None" if none. Skip the file only for a small change with no technical choices. Tell the user if you skip it.
+Foundry resources is a short summary with pointers to `ontology.md`, `logic.md` and `data.md`. Write "None" if none. Skip the file only for a small change with no technical choices. Tell the user if you skip it. Put unknowns in `open-questions.md`, not here.
+
+## ontology.md, data.md, logic.md
+
+Each file has tables with one row per resource. Use API names exactly. Status is `new`, `changed` or `read` (a `read` row is the name only; never redefine an existing type). Write "None" under a heading with nothing to record. Every file must exist, even when all headings say "None".
+
+- `ontology.md`: a glossary term (business concept) can map to several object types and link types, and one object type can serve several terms. Give the term on every row; the glossary row lists all its resources. `## Scope` (Ontology, private or shared, Marketplace, owner), `## Object types` (API name, display name, term, status, primary key, backing dataset, properties with types and units, description), `## Link types` (from, to, cardinality, stored as: a foreign key property, or a join dataset for many-to-many), `## Questions this model must answer` (situation, factors, impact; each cited by a scenario), `## Interfaces and shared properties`, `## Value types` (or "None"), `## Design review` (each rule broken, the reason, when to revisit; or "No deviations"), `## Access` (markings, restricted views, row and column rules, roles; who is covered, including AI agents; or "Unchanged"). Use API names, never RIDs.
+- `data.md`: `## Datasets` (kind: dataset, virtual table or model; source, columns, cadence, owner), `## Transforms and pipelines` (tool, inputs, outputs, trigger), `## Data quality` (check and threshold). Every dataset behind an object type is listed. No credentials or customer data.
+- `logic.md`: `## Actions` (edits, parameters, rules, who may run it and what must be true, side effects), `## Functions` (language, inputs, output, reads, edits per object type, the function-backed action that uses it), `## Writeback to other systems` (target, mechanism, behavior when down, or "None"), `## AIP Logic and agents` (input, output, tools, human review before write, evaluation cases that cite spec scenarios). AIP Logic that writes to the Ontology goes through an action.
+- Every `Ontology:` name in a spec is an existing resource or is listed in `ontology.md` or `logic.md`.
+
+## open-questions.md
+
+A table: `ID | Stage | Question | Blocking | Affects | Owner | Status | Answer`.
+
+- Create it with the proposal. Add a row for every gap, at every stage. IDs are `Q1`, `Q2`, never reused.
+- Blocking is `yes` when the answer would change the specs, the approach, the Foundry resources or the tasks.
+- Status is `open`, `answered`, `assumed` (state the assumption in Answer) or `dropped`. Never delete a row.
+- Do not guess. A gap you cannot close is a row.
+- Before `tasks.md`, ask the user to answer every row that is blocking and open. Write no tasks until none remain.
 
 ## tasks.md
 
 - `# Tasks`, then groups `## 1. <name>`, `## 2. <name>`.
 - Every task is `- [ ] 1.1 <work>`, followed by one indented line: `  - **Verify:** GIVEN <state>; WHEN <action>; THEN <result>.` If a spec scenario already says it, cite it: `  - **Verify:** scenario "<name>" of <capability>.` A Verify line is not a checkbox.
-- Order by dependency. Put each group's tests and docs in that group.
+- Order by dependency: datasets and transforms, object and link types, actions, functions, AIP Logic, then apps. Every new or changed resource in `data.md`, `ontology.md` and `logic.md` has a task.
+- Put each group's tests and docs in that group.
 - Add a task to update `openspec/glossary.md` when the proposal lists glossary changes.
 
 ## Finish

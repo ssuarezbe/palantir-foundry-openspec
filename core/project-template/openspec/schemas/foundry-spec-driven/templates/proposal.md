@@ -32,7 +32,7 @@
 ## Glossary changes
 
 <!-- New or changed terms for openspec/glossary.md. Use existing terms verbatim. Write "None" if there are none. -->
-- `<term>`: <definition> (Ontology API name, or "not modelled")
+- `<term>`: <definition> (Ontology resources that represent it: one or several object, link or action type API names, or "not modelled")
 
 ## Impact
 

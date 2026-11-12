@@ -18,7 +18,7 @@
 
 ## Foundry resources
 
-<!-- Datasets, transforms, object types, action types, functions affected. Use API names. Write "None" if none. -->
+<!-- Summary and pointers only. The detail is in ontology.md, logic.md and data.md. Write "None" if the change touches no Foundry resource. -->
 
 ## Risks / Trade-offs
 

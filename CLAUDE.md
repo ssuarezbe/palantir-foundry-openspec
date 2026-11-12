@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## State of this repository
 
-Built (version `1.16.0-foundry.4`, see `CHANGELOG.md`). `BUILD_PROMPT.md` is the original build spec; the layout below replaces its layout (it was regrouped by audience in `foundry.4`).
+Built (version `1.16.0-foundry.5`, see `CHANGELOG.md`). `BUILD_PROMPT.md` is the original build spec; the layout below replaces its layout (it was regrouped by audience in `foundry.4`).
 
 Layout: `core/` (what every team copies), `addons/` (per-environment), `maintainer/` (build, test, provenance; not in the release zip), `docs/` (four guides). Top level also has `README.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `THIRD_PARTY_NOTICES.md`.
 
@@ -32,7 +32,7 @@ CI gate: TypeScript functions repos run Jest on every commit; a Python standard-
 
 ## Architecture
 
-- `core/project-template/` — what a new Foundry project starts from: `openspec/config.yaml` (schema + context + rules for glossary, Ontology, Gherkin), `openspec/glossary.md` template, the `foundry-spec-driven` schema (a fork of `spec-driven` adding Ontology references, glossary changes, Foundry resources, `Implemented in:`, Gherkin; artifact order unchanged: **proposal → specs/design → tasks → apply**), empty `specs/` and `changes/archive/`.
+- `core/project-template/` — what a new Foundry project starts from: `openspec/config.yaml` (schema + context + rules for glossary, Ontology, Gherkin), `openspec/glossary.md` template, the `foundry-spec-driven` schema (a fork of `spec-driven` adding Ontology references, glossary changes, Foundry resources, `Implemented in:`, Gherkin, plus the artifacts `ontology`, `data`, `logic` and `open-questions`; graph: **proposal → specs / design / ontology / data / open-questions; ontology → logic; all → tasks → apply**), empty `specs/` and `changes/archive/`.
 - `core/aip-skills/` — four AIP skills (explore/propose/apply/archive), each a `Name:`/`Description:` + Markdown body, each under ~150 lines. Hard rule: **zero `openspec` CLI calls** in this directory — every step is written out manually. Enforced by a grep-based test.
 - `addons/cli/` — `openspec-1.16.0/` (the bundle, `package.json`, `schemas/`; the bundle reads `package.json` two directories above itself, so don't flatten it; `bun build --compile` does not work), `launchers/` (sh and `.cmd`, always set `OPENSPEC_TELEMETRY=0`), `SHA256SUMS`, `PIN.md` (version, hashes, local patches), and the bundled-package licences.
 - `addons/workspace/` — `.continue/` and `.claude/` generated from upstream output, CLI calls rewritten to `./tools/openspec/launchers/openspec`.
@@ -46,5 +46,5 @@ CI gate: TypeScript functions repos run Jest on every commit; a Python standard-
 - **No npm install scripts in shipped artifacts** (build with `--ignore-scripts`); no new runtime dependencies beyond Node (Route A) and the Python standard library (the Python check).
 - Keep OpenSpec's MIT license/copyright in `THIRD_PARTY_NOTICES.md`; never present this as an official OpenSpec or Palantir product; "Palantir"/"Foundry" are their trademarks — note that in the README.
 - No Palantir proprietary content, customer data, or credentials anywhere, including test fixtures.
-- Artifact order (`proposal → specs/design → tasks → apply`) is fixed by the forked schema — don't reorder it when editing templates or skills.
+- The artifact graph (see Architecture) is fixed by the forked schema — don't reorder it when editing templates or skills. Adding an artifact changes it: ask first.
 - Ask before: changing the artifact order, adding a dependency, or making any network call outside the build step.

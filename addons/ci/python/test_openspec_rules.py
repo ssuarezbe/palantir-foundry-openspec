@@ -178,7 +178,7 @@ def parse_glossary():
         rows.append({
             "term": cells[0],
             "definition": cells[1],
-            "api": cells[2].replace("`", ""),
+            "api": [n.strip() for n in cells[2].replace("`", "").split(",") if n.strip()],
             "synonyms": [s.strip() for s in cells[3].split(",") if s.strip()],
         })
     return rows
@@ -204,6 +204,9 @@ class GlossaryRules(unittest.TestCase):
                 for syn in r["synonyms"]:
                     pat = re.compile(r"\b" + re.escape(syn) + r"\b", re.I)
                     for i, line in enumerate(lines, 1):
+                        # API names may equal a forbidden word: the concept and the resource are different things
+                        if re.match(r"\s*(Ontology|Implemented in):", line):
+                            continue
                         if pat.search(line):
                             bad.append(f"forbidden synonym '{syn}' (use '{r['term']}') in {rel(f)}:{i}")
         self.assertEqual(bad, [])
@@ -215,8 +218,9 @@ class GlossaryRules(unittest.TestCase):
         known = set(json.loads(p.read_text(encoding="utf8")))
         bad = []
         for r in parse_glossary():
-            if r["api"] and r["api"].lower() != "not modelled" and r["api"] not in known:
-                bad.append(f"glossary API name '{r['api']}' is not in openspec/ontology.json (term '{r['term']}')")
+            for name in r["api"]:
+                if name.lower() != "not modelled" and name not in known:
+                    bad.append(f"glossary API name '{name}' is not in openspec/ontology.json (term '{r['term']}')")
         for f in spec_files():
             text = strip_code(f.read_text(encoding="utf8"), False)
             for m in re.finditer(r"^\s*Ontology:\s*(.+)$", text, re.M):

@@ -23,7 +23,7 @@ Not tested here: everything in this guide. The menu names below follow the build
 ## How the skills behave
 
 - Explore reads the config, glossary, specs and open changes, and confirms each Ontology API name exists. It writes nothing.
-- Propose creates `openspec/changes/<name>/` with `.openspec.yaml`, then writes proposal, specs, design and tasks in that order, checking its own output against the validation rules.
+- Propose creates `openspec/changes/<name>/` with `.openspec.yaml`, then writes proposal, open questions, specs, design, ontology, data, logic and tasks in that order, checking its own output against the validation rules.
 - Apply works through `tasks.md`, ticks each box, commits and reads Checks.
 - Archive asks for a clear yes, merges the delta specs into `openspec/specs/<capability>/spec.md` in the order RENAMED, REMOVED, MODIFIED, ADDED, then moves the change to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
 

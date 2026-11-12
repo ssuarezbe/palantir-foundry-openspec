@@ -41,6 +41,11 @@ grep -q "$(cat "$ROOT/VERSION")" "$ROOT/addons/cli/PIN.md" "$ROOT/README.md" && 
 echo "== 2. schema"
 cp -R "$ROOT/core/project-template" "$WORK/schemacheck"
 (cd "$WORK/schemacheck" && node "$CLI" schema validate foundry-spec-driven >"$WORK/o" 2>&1) && ok || bad "schema validate: $(cat "$WORK/o")"
+(cd "$WORK/schemacheck" && node "$CLI" new change graph >/dev/null 2>&1 && node "$CLI" status --change graph >"$WORK/o" 2>&1 && grep -q "0/8 artifacts" "$WORK/o" && grep -q "tasks (blocked by: specs, design, ontology, data, logic, open-questions)" "$WORK/o") && ok || bad "schema graph: expected 8 artifacts with tasks needing ontology, data, logic, open-questions: $(cat "$WORK/o")"
+for f in "$ROOT/core/project-template/openspec/schemas/foundry-spec-driven/schema.yaml" "$ROOT/core/project-template/openspec/config.yaml" "$ROOT/core/aip-skills/openspec-propose.md" "$ROOT/core/aip-skills/openspec-explore.md"; do
+  grep -q "ontology-design.md" "$f" && ok || bad "$f does not point to openspec/ontology-design.md"
+done
+[ -s "$ROOT/core/project-template/openspec/ontology-design.md" ] && ok || bad "openspec/ontology-design.md is missing from the project template"
 grep -q "^schema: foundry-spec-driven" "$ROOT/core/project-template/openspec/config.yaml" && ok || bad "project-template config does not use foundry-spec-driven"
 
 echo "== 3. fresh project: project-template + workspace/.continue"

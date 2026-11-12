@@ -35,7 +35,7 @@ Copy these into the Code Repository you work in:
 
 ### Route A: Node 20+
 
-1. Unzip the kit. Check the zip against its `.sha256` file.
+1. Unzip the kit. Check the zip against its `.sha256` file. The zip has no test suite, so check the bundle too: from `addons/cli/` run `shasum -a 256 -c SHA256SUMS` (macOS) or `sha256sum -c SHA256SUMS` (Linux; on Windows compare `certutil -hashfile openspec-1.16.0\dist\cli\openspec.mjs SHA256` with the line in `SHA256SUMS`). Then run `./launchers/openspec --version` and expect `1.16.0`.
 2. In your repo, copy `addons/cli/` to `tools/openspec/` and `core/project-template/openspec/` to `openspec/`. Copy `addons/workspace/.continue/` to `.continue/` (or `addons/workspace/.claude/` to `.claude/`).
 3. Edit `openspec/config.yaml` if you need to. Fill in `openspec/glossary.md`: delete the two `Example:` rows and add your terms.
 4. Check it works. On macOS or Linux: `./tools/openspec/launchers/openspec validate --all --strict --no-interactive`. On Windows: `tools\openspec\launchers\openspec.cmd validate --all --strict --no-interactive`. Expect `No items found to validate.`

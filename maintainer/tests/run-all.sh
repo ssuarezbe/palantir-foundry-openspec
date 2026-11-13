@@ -79,6 +79,12 @@ for d in "$ROOT"/maintainer/tests/fixtures/*/*/; do
 JEOF
     (cd "$t" && OPENSPEC_CLI=$CLI "$JEST_ENV/node_modules/.bin/jest" --config "$t/jest.config.json" >"$WORK/j" 2>&1)
     check "$id [jest]" $? "$(want "$fx" jest)" "$WORK/j" "$(want "$fx" reason)"
+    # No child process: the TypeScript port plus the glossary test, without openspec.test.ts. Must match the Python result.
+    (cd "$t" && "$JEST_ENV/node_modules/.bin/jest" --config "$t/jest.config.json" --testPathIgnorePatterns '/openspec\.test\.ts$' >"$WORK/j" 2>&1)
+    check "$id [jest, no child process]" $? "$(want "$fx" python)" "$WORK/j" "$(want "$fx" reason)"
+    # The TypeScript port alone must agree with the bundle on the OpenSpec rules.
+    (cd "$t" && "$JEST_ENV/node_modules/.bin/jest" --config "$t/jest.config.json" --testPathPattern 'openspec-rules' >"$WORK/j" 2>&1); jrcode=$?
+    [ "$bcode" = skip ] || { [ $jrcode -eq 0 ] && [ $bcode -eq 0 ]; } || { [ $jrcode -ne 0 ] && [ $bcode -ne 0 ]; } && ok || bad "$id [parity, TypeScript port]: bundle exit $bcode, port exit $jrcode"
   fi
 
   (cd "$t" && OPENSPEC_ROOT=$t python3 -I "$ROOT/addons/ci/python/test_openspec_rules.py" >"$WORK/p" 2>&1)
@@ -101,6 +107,24 @@ sto() { XDG_DATA_HOME=$H/xdg-data XDG_CONFIG_HOME=$H/xdg-config node "$CLI" "$@"
 # Fresh machine: the store id is declared but this machine has not registered it.
 (cd "$H/react-app" && XDG_DATA_HOME=$H/empty XDG_CONFIG_HOME=$H/empty node "$CLI" validate --all --strict --no-interactive >"$WORK/o" 2>&1); code=$?
 { [ $code -ne 0 ] && grep -q "Unknown store" "$WORK/o"; } && ok || bad "unregistered store should fail with 'Unknown store'"
+
+echo "== 9. copy-only install: no npm, no execute bit"
+R=$WORK/existing-repo; mkdir -p "$R/tests" "$R/tools"
+cp -R "$ROOT/addons/cli" "$R/tools/openspec" && cp -R "$ROOT/core/project-template/openspec" "$R/openspec"
+chmod -x "$R/tools/openspec/launchers/openspec"
+(cd "$R" && sh tools/openspec/launchers/openspec --version >"$WORK/o" 2>&1); grep -qx "1.16.0" "$WORK/o" && ok || bad "copied launcher (run with sh, no execute bit): $(cat "$WORK/o")"
+(cd "$R" && sh tools/openspec/launchers/openspec validate --all --strict --no-interactive >"$WORK/o" 2>&1; ! grep -q ERROR "$WORK/o") && ok || bad "copied CLI does not validate an empty project: $(cat "$WORK/o")"
+if [ $NOJEST = 0 ]; then
+  cp "$ROOT"/addons/ci/typescript/*.test.ts "$R/tests/"
+  printf '{"compilerOptions":{"target":"ES2020","module":"commonjs","esModuleInterop":true,"types":["jest","node"],"typeRoots":["%s/node_modules/@types"]}}' "$JEST_ENV" >"$R/tsconfig.json"
+  cat >"$R/jest.config.json" <<JEOF
+{"rootDir":"$R","testMatch":["**/tests/*.test.ts"],
+ "transform":{"^.+\\\\.ts\$":["$JEST_ENV/node_modules/ts-jest",{"tsconfig":"$R/tsconfig.json"}]},
+ "moduleDirectories":["$JEST_ENV/node_modules"],"cache":false}
+JEOF
+  # No OPENSPEC_CLI: the test must find the bundle at tools/openspec/openspec-1.16.0/ on its own.
+  (cd "$R" && "$JEST_ENV/node_modules/.bin/jest" --config "$R/jest.config.json" >"$WORK/j" 2>&1); check "copy-only repo [jest, default bundle path]" $? pass "$WORK/j"
+fi
 
 echo "== 5. aip-skills"
 if grep -rnE '(^|[^A-Za-z/_.-])openspec[[:space:]]+[-a-z]' "$ROOT/core/aip-skills" >"$WORK/o"; then bad "CLI calls in aip-skills:"$'\n'"$(cat "$WORK/o")"; else ok; fi

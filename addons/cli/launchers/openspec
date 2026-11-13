@@ -3,7 +3,7 @@
 OPENSPEC_TELEMETRY=0
 export OPENSPEC_TELEMETRY
 if ! command -v node >/dev/null 2>&1; then
-  echo "openspec: node not found. Use Route B or C in docs/01-routes.md." >&2
+  echo "openspec: node not found. Use situation 3, 4 or 1 in docs/setup.md." >&2
   exit 127
 fi
 exec node "$(dirname "$0")/../openspec-1.16.0/dist/cli/openspec.mjs" "$@"

@@ -1,6 +1,6 @@
 # AI FDE skills
 
-AI FDE has no shell and no Node, so it uses the four files in `core/aip-skills/`.
+AI FDE has no shell and no Node, so it uses the four files in `core/aip-skills/`. This guide covers situation 1 of `docs/setup.md` (no gate) and the AI FDE side of situations 2 to 4.
 Each is a skill: a `Name:` line, a `Description:` line, then a Markdown body. None calls a CLI.
 Not tested here: everything in this guide. The menu names below follow the build brief and may differ in your Foundry version.
 
@@ -27,10 +27,25 @@ Not tested here: everything in this guide. The menu names below follow the build
 - Apply works through `tasks.md`, ticks each box, commits and reads Checks.
 - Archive asks for a clear yes, merges the delta specs into `openspec/specs/<capability>/spec.md` in the order RENAMED, REMOVED, MODIFIED, ADDED, then moves the change to `openspec/changes/archive/YYYY-MM-DD-<name>/`.
 
+## Review by hand when no gate runs
+
+If Checks run no tests on the specs (situation 1), nothing checks what AI FDE writes. A reviewer reads each change before merge and checks:
+
+1. Every requirement has `SHALL` or `MUST` and at least one `#### Scenario:` (four `#`).
+2. Every scenario has a `GIVEN` or `WHEN` line and a `THEN` line, in bold capitals, with exactly one `WHEN`.
+3. The change has at least one spec file, or `.openspec.yaml` says `skip_specs: true`.
+4. No forbidden synonym from `openspec/glossary.md` appears in a spec. Every glossary term has a definition.
+5. Every `Ontology:` name, and every name in the glossary Ontology resources column, exists in Ontology Manager.
+6. `ontology.md` has a "Design review" table filled in against `openspec/ontology-design.md`.
+7. No row in `open-questions.md` is blocking and open before `tasks.md` or any code.
+8. Every task has a `Verify:` line, and each task's checkbox is ticked only when its `Verify:` line was acted out.
+
+Items 1 to 4 are what the automatic checks apply in the other situations. Add a gate later (situation 2, 3 or 4) and these four stop depending on a person.
+
 ## What to confirm in Foundry
 
 - The menu names in step 2 to 6 in your enrolment.
-- Any size limit on a skill. The longest skill here is 96 lines.
+- Any size limit on a skill. The longest skill here is 139 lines.
 - That AI FDE can read Checks results and the commit's failing file and line.
 - That AI FDE can move a folder and edit many files in one commit (Archive needs it). If it cannot, do the archive step by hand.
 - Whether AI FDE can reach the Ontology tools the Explore skill names, or needs `openspec/ontology.json`.

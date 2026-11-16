@@ -73,7 +73,7 @@ Not built. Add one only when a team needs it, and ask first: a new artifact chan
 
 ## Where each rule lives
 
-- `core/project-template/openspec/schemas/foundry-spec-driven/`: the templates. Specs get an optional `Ontology:` line, proposals get Glossary changes, designs get Foundry resources, and the schema adds `ontology.md`, `logic.md` and `open-questions.md`.
+- `core/project-template/openspec/schemas/foundry-spec-driven/`: the templates. Specs get an optional `Ontology:` line, proposals get Glossary changes and name the Foundry resources under Impact, and the schema adds `ontology.md`, `logic.md` and `open-questions.md`.
 - `core/project-template/openspec/config.yaml`: `context:` and `rules:` that every assistant reads.
 - AIP skills and workspace prompts: Explore confirms API names before you propose.
 - `addons/ci/`: the failing checks.

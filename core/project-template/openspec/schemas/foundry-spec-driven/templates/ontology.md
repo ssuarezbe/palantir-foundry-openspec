@@ -1,6 +1,6 @@
 # Ontology
 
-<!-- The data model this change adds, changes or reads, and the data behind it. If the change touches no Ontology resource and no dataset, replace everything below with "None" and one line saying why. Read openspec/ontology-design.md first. A glossary term (business concept) can map to several object types and link types, and one object type can serve several terms: give the term on every row. Use "not modelled" if there is none. Use API names exactly as in Ontology Manager, never RIDs. Do not redefine existing types: list them as "read". Write "None" under a heading with nothing to record. -->
+<!-- The data model this change adds, changes or reads, and the data behind it. If the change touches no Ontology resource and no dataset, replace everything below with "None" and one line saying why. Read openspec/ontology-design.md first. A glossary term (business concept) can map to several object types and link types, and one object type can serve several terms: give the term on every row. Use "not modelled" if there is none. Use API names exactly as in Ontology Manager, never RIDs. Do not redefine existing types: list them as "read". Write "None" under a heading with nothing to record. Keep the table headers as they are: the checks read them. -->
 
 ## Scope
 
@@ -10,15 +10,21 @@
 
 ## Object types
 
-| API name | Display name | Glossary term | Status | Primary key (type) | Backing dataset | Properties (API name: type, unit; mark derived or denormalized) | Description |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `<ObjectTypeApiName>` | <name users see> | `<term>` | new / changed / read | `<property>` (String) | `<dataset name>` | `<apiName>: <type>, <unit>` | <one sentence> |
+| API name | Display name | Glossary term | Status | Primary key (type) | Backing dataset |
+| --- | --- | --- | --- | --- | --- |
+| `<ObjectTypeApiName>` | <name users see> | `<term>` | new / changed / read | `<property>` (String) | `<dataset name>` |
+
+<!-- One block per new or changed object type. Mark derived or denormalized properties and give the source of truth. -->
+
+- `<ObjectTypeApiName>`: <one-sentence description>
+  - `<apiName>`: <type>, <unit>
+  - `<apiName>`: <type> (derived from `<source>`)
 
 ## Link types
 
-| API name (each side) | Glossary term | From | To | Cardinality | Stored as | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| `<SideAApiName>` / `<SideBApiName>` | `<term>` | `<ObjectType>` | `<ObjectType>` | one-to-many / many-to-many / one-to-one | foreign key `<property>` on `<ObjectType>`, join dataset `<name>`, or object-backed type `<ObjectType>` | new / changed / read |
+| API name (each side) | Glossary term | From → To | Cardinality | Stored as | Status |
+| --- | --- | --- | --- | --- | --- |
+| `<SideAApiName>` / `<SideBApiName>` | `<term>` | `<ObjectType>` → `<ObjectType>` | one-to-many / many-to-many / one-to-one | foreign key `<property>` on `<ObjectType>`, join dataset `<name>`, or object-backed type `<ObjectType>` | new / changed / read |
 
 ## Interfaces and shared properties
 
@@ -46,11 +52,15 @@
 
 ## Backing data
 
-<!-- Every dataset, virtual table or model behind a new or changed object type or link. No credentials or customer data. -->
+<!-- Every dataset, virtual table or model behind a new or changed object type or link. No credentials or customer data: name sources by system. -->
 
-| Name | Kind (dataset, virtual table, model) | Status | Source (system or dataset) | Columns (name: type) | Update cadence | Owner |
-| --- | --- | --- | --- | --- | --- | --- |
-| `<dataset name>` | dataset | new / changed / read | `<source>` | `<name>: <type>` | `<cadence>` | `<team>` |
+| Name | Kind (dataset, virtual table, model) | Status | Source (system or dataset) | Update cadence | Owner |
+| --- | --- | --- | --- | --- | --- |
+| `<dataset name>` | dataset | new / changed / read | `<source>` | `<cadence>` | `<team>` |
+
+<!-- Columns of each new or changed dataset, one line each. -->
+
+- `<dataset name>`: `<column>: <type>`, `<column>: <type>`
 
 Transforms and pipelines:
 

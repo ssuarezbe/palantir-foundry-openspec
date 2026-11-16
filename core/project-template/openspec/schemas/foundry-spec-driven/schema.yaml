@@ -16,7 +16,7 @@ artifacts:
         - **New Capabilities**: List capabilities being introduced. Each becomes a new `specs/<capability-path>/spec.md`. Name each capability for a durable system behavior (for example, `user-auth`), not the work in this change (for example, `add-login-endpoint`). Choose a cohesive boundary that can own related requirements as the system evolves; avoid broad catch-all capabilities. Use kebab-case for path segments you introduce (e.g., `user-auth` or `identity/user-auth`) and follow the project's existing spec organization.
         - **Modified Capabilities**: List existing capabilities whose REQUIREMENTS are changing. Only include if spec-level behavior changes (not just implementation details). Each needs a delta spec file. Use the exact existing path under `openspec/specs/`. Leave empty if no requirement changes.
       - **Glossary changes**: New or changed domain terms. Check `openspec/glossary.md` first and use its terms verbatim. Add every new domain noun to the glossary in this same change. A term is a business concept: give the Ontology resources (object types, link types, action types) that represent it, one or several, or "not modelled". Write "None" if there are no changes.
-      - **Impact**: Affected code, APIs, dependencies, or systems.
+      - **Impact**: Affected code, APIs, dependencies, or systems. Name the Foundry resources touched (object types, actions, datasets) once here; the detail lives in `ontology.md` and `logic.md`.
 
       Also create `open-questions.md` now (see that artifact). Record every gap you could not close while writing the proposal.
 
@@ -200,7 +200,6 @@ artifacts:
       - **Context**: Only the current state and constraints needed to explain the approach. Reference the proposal for motivation instead of restating it (e.g., "See proposal.md - Why").
       - **Goals / Non-Goals**: What this design achieves and explicitly excludes. Don't restate the proposal's scope - add only design-level boundaries.
       - **Decisions**: Key technical choices with rationale (why X over Y?). Include alternatives considered for each decision.
-      - **Foundry resources**: A short summary with pointers to `ontology.md` and `logic.md`. Do not repeat their tables. Write "None" if the change touches no Foundry resource.
       - **Risks / Trade-offs**: Known limitations, things that could go wrong. Format: [Risk] → Mitigation
       - **Migration Plan**: Steps to deploy, rollback strategy (if applicable)
 
@@ -232,7 +231,7 @@ artifacts:
       - List every object type, link type and access rule the change adds, changes or reads. Use the API name exactly as in Ontology Manager. Confirm each existing name with the Ontology tools you have, `openspec/ontology.json` if present, or the user.
       - Status is `new`, `changed` or `read`. For `read`, give only the API name and why it is needed. Do not redefine existing types.
       - Give the glossary term on every object type, link type and action row. A business concept can need several object types and link types: list each one with the same term. Write "not modelled" if no term fits. If the concept is new, add its term to `openspec/glossary.md` in this change. The glossary row for a term must list every resource that represents it.
-      - For a new or changed object type: primary key, backing dataset (it must appear under Backing data) and properties with types.
+      - For a new or changed object type: primary key and backing dataset (it must appear under Backing data) in the table; description and properties with types in a bullet block under the table, one block per type.
       - Use API names, never RIDs: RIDs differ between environments. Give each object type a display name and a one-sentence description so people and agents can find it. Name overlapping concepts once: if two object types look alike, say how they differ or merge them.
       - For each property, give the unit, and the date or aggregation rule where it matters. Unclear granularity, units or dates give inconsistent answers.
       - For a link type: the API name of each side, both ends, cardinality, status, and how it is stored. A one-to-one or one-to-many link is a foreign key property on one object type. A many-to-many link needs a join dataset, which must appear under Backing data. Use an object-backed link type when the relationship has data of its own. A link reflects a real business relationship, not a source-system join.
@@ -240,12 +239,12 @@ artifacts:
       - Value types: list reusable semantic types with their constraint in words. Write "None" if unused.
       - Choose the primary key type with care: String, Integer or Short are preferred. Mark derived and denormalized properties and give the source of truth.
       - Questions this model must answer: list the business questions, each as situation, contributing factors, impact, with the object and link types used. Write at least one spec scenario for each. A manual export or join that people rely on today usually means a missing link.
-      - Backing data: every dataset, virtual table or model behind a new or changed object type or link: name, kind, status, source system or upstream dataset, columns with types, update cadence, owner. Then the transforms that produce them (tool, inputs, outputs, trigger) and one data quality check per row with its threshold in words. No credentials, connection strings or customer data: name sources by system.
+      - Backing data: every dataset, virtual table or model behind a new or changed object type or link: name, kind, status, source system or upstream dataset, update cadence, owner in the table; columns with types in a bullet line per dataset under it. Then the transforms that produce them (tool, inputs, outputs, trigger) and one data quality check per row with its threshold in words. No credentials, connection strings or customer data: name sources by system.
       - Access: markings, restricted views, row-level and column-level rules, roles. Say who is covered: users, groups and AI agents (agents inherit permissions from the user or project). Write "Unchanged" if none.
       - Write "None" under a heading with nothing to record. If the change touches no Ontology resource, every heading says "None".
       - Add a row to `open-questions.md` (stage `ontology`) for every name, key, type, rule, source or cadence you could not confirm.
 
-      Keep it a model, not an implementation: no transform code, no function bodies.
+      Keep the table headers exactly as in the template: the checks read them. Keep it a model, not an implementation: no transform code, no function bodies.
     requires:
       - proposal
 
@@ -258,10 +257,10 @@ artifacts:
 
       First read `openspec/ontology-design.md` (sections 6 and 7). Design actions around business operations, not single properties. Choose actions for decisions, pipelines for batch and streaming data work, automations for events, and functions for live complex logic.
 
-      - Actions: API name, the object and link types it edits (they must be in `ontology.md` or exist), parameters, the rules it uses (create, modify, delete, link, function), submission criteria in words (who may run it and what must be true), side effects (notification, webhook, schedule), status (`new`, `changed`, `read`). Rules compile into one edit per object, so order matters. A function rule cannot be combined with other rules. Link rules work for many-to-many links only: change a one-to-many link through its foreign key property. Byte, float and short properties cannot be action parameters.
-      - Functions: API name, language (TypeScript or Python), inputs, output, kind (business rule, model, LLM-driven or orchestration), what it reads, the edits it returns (create, update, delete, link) per object type, who uses it, status. A function that edits changes nothing by itself: it takes effect only through a function-backed action, so name that action. Automate does not apply edits returned by a function: use an action. Object set queries inside the function read values from before its edits.
+      - Actions: in the table, API name, glossary term, the object and link types it edits (they must be in `ontology.md` or exist), the rules it uses (create, modify, delete, link, function) and status (`new`, `changed`, `read`). In a bullet block under the table, one per new or changed action: parameters, submission criteria in words (who may run it and what must be true), side effects (notification, webhook, schedule). Rules compile into one edit per object, so order matters. A function rule cannot be combined with other rules. Link rules work for many-to-many links only: change a one-to-many link through its foreign key property. Byte, float and short properties cannot be action parameters.
+      - Functions: in the table, API name, kind (business rule, model, LLM-driven or orchestration), what it reads, the edits it returns (create, update, delete, link) per object type, who uses it, status. In a bullet block under the table: language (TypeScript or Python), inputs, output. A function that edits changes nothing by itself: it takes effect only through a function-backed action, so name that action. Automate does not apply edits returned by a function: use an action. Object set queries inside the function read values from before its edits.
       - Writeback: for every change that must reach a system outside Foundry, name the action or function, the target system, the mechanism (webhook, change data capture or other) and what happens when the target is down. Write "None" if the Ontology is the only record.
-      - AIP Logic and agents: name, input, output, the tools it may call (functions, actions, Ontology queries), whether a human reviews before it writes, and its evaluation cases. Cite spec scenarios as evaluation cases, for example `scenario "<name>" of <capability>`. An AIP Logic function that writes to the Ontology must go through an action.
+      - AIP Logic and agents: in the table, name, the tools it may call (functions, actions, Ontology queries), whether a human reviews before it writes, and its evaluation cases; input and output in a bullet block under the table. Cite spec scenarios as evaluation cases, for example `scenario "<name>" of <capability>`. An AIP Logic function that writes to the Ontology must go through an action.
       - Write "None" under a heading with nothing to record.
       - Add a row to `open-questions.md` (stage `logic`) for every unknown parameter, rule or tool.
 

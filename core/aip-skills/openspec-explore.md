@@ -26,7 +26,7 @@ OpenSpec keeps specs in the `openspec/` folder of the Code Repository. Every pat
 ## Find where things live
 
 - Read the `Implemented in:` lines in existing specs. They say which Ontology resources, functions and apps carry a behavior.
-- Ask which repositories and Foundry resources the idea touches. List them in your summary.
+- Ask which repositories and Foundry resources the idea touches. List them in your summary; the proposal names them once under Impact.
 - The spec home is the repository that holds `openspec/`. If the user works in another repository, remind them that specs are written in the spec home.
 
 ## Confirm the Ontology

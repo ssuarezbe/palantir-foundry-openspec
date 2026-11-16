@@ -36,4 +36,4 @@
 
 ## Impact
 
-<!-- Affected code, APIs, dependencies, systems -->
+<!-- Affected code, APIs, dependencies, systems. Name the Foundry resources touched once here; detail is in ontology.md and logic.md. -->

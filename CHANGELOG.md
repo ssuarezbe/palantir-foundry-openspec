@@ -6,6 +6,9 @@ Schema `foundry-spec-driven` version 3. The bundle did not change (same SHA-256)
 
 - `data.md` is gone: its tables are the Backing data section of `ontology.md`. Seven artifacts per change. An in-flight change made with version 2 moves its `data.md` content into `ontology.md` and deletes the file. `ontology.md` and `logic.md` may hold only "None" and a reason when the change touches nothing they cover.
 - Two more glossary checks (TypeScript and Python): a resource tagged with a glossary term in `ontology.md` or `logic.md` must be on that term's glossary row; an `Ontology:` name in a change's spec must be in that change's `ontology.md` or `logic.md` (or in `ontology.json`). Fixtures `invalid/term-resource-mismatch`, `invalid/ontology-ref-not-listed`.
+- Narrower tables in `ontology.md` and `logic.md`: object types 8 → 6 columns, link types 7 → 6, actions 8 → 5, functions 9 → 6, backing data 7 → 6. Properties, columns, parameters, submission criteria, inputs and outputs go in a bullet block under each table, one per new or changed resource.
+- `design.md` loses its Foundry resources section: the proposal names the touched resources once under Impact; `ontology.md` and `logic.md` hold the detail.
+- The checks require the template headings `## Object types`, `## Link types` (ontology.md) and `## Actions` (logic.md), each with a table whose headers keep `API name` and `Glossary term`, or "None". Fixture `invalid/renamed-model-headers`.
 - Fixed: the spec instruction's example scenario used a click; `design.md` template gains the Migration Plan section its instruction names; the example `tasks.md` uses the `- **Verify:**` form.
 
 - Open-questions gate checked: a change with `tasks.md` fails while `open-questions.md` has a row with Blocking `yes` and Status `open`. Added to `glossary.test.ts` and `test_openspec_rules.py` (situations 2 to 4). Fixtures `invalid/blocking-open-question`, `valid/open-question-answered`.

@@ -130,7 +130,7 @@ Put the gate only in the spec home (`docs/multi-repo.md`). Other repositories de
 No check covers keyword order, a single `WHEN`, business wording, the design review or the quality of an open-question answer.
 The open-questions gate is in `glossary.test.ts` (and the Python file): a change that has `tasks.md` fails while `open-questions.md` has a row with Blocking `yes` and Status `open`. It runs in situations 2 to 4, not in the bare CLI.
 Code spans and fenced code are ignored by the synonym check, and so are `Ontology:` and `Implemented in:` lines. Rows whose term starts with `Example:` are skipped. Archived changes are not scanned.
-The source repository tests the CLI, the TypeScript port and the Python port against 24 fixtures and requires the three to agree (`maintainer/tests/fixtures/`, not in the release zip).
+The source repository tests the CLI, the TypeScript port and the Python port against 25 fixtures and requires the three to agree (`maintainer/tests/fixtures/`, not in the release zip).
 
 ## 6. What to confirm in Foundry
 

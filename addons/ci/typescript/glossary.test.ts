@@ -142,6 +142,27 @@ const rows = satellite ? [] : parseGlossary();
     return out;
   }
 
+  // The template headers are the contract: a renamed heading or column would silently escape the row checks.
+  const REQUIRED: Record<string, string[]> = { "ontology.md": ["Object types", "Link types"], "logic.md": ["Actions"] };
+  function headerIssues(file: string): string[] {
+    const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+    const body = lines.filter((l, i) => !(i === 0 && l.startsWith("# ")) && l.trim() !== "");
+    if (body[0]?.trim() === "None") return []; // the whole file is "None" and a reason
+    const out: string[] = [];
+    for (const name of REQUIRED[path.basename(file)]) {
+      const start = lines.findIndex((l) => l.trim() === "## " + name);
+      if (start < 0) { out.push(`${rel(file)}: section '## ${name}' is missing (keep the template headings)`); continue; }
+      let end = lines.findIndex((l, i) => i > start && /^## /.test(l));
+      if (end < 0) end = lines.length;
+      const sec = lines.slice(start + 1, end);
+      const header = sec.find((l) => l.trim().startsWith("|"));
+      if (!header) { if (!sec.some((l) => l.trim() === "None")) out.push(`${rel(file)}: '## ${name}' has no table and no "None"`); continue; }
+      const cells = header.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      if (!/^api name/i.test(cells[0]) || !cells.some((c) => /^glossary term/i.test(c))) out.push(`${rel(file)}: the table under '## ${name}' must keep the headers 'API name' and 'Glossary term'`);
+    }
+    return out;
+  }
+
   it("keeps ontology.md and logic.md consistent with the glossary and the specs", () => {
     const bad: string[] = [];
     const byTerm = new Map(rows.map((r) => [r.term, r.api]));
@@ -155,6 +176,7 @@ const rows = satellite ? [] : parseGlossary();
       if (files.length === 0) continue;
       const listed = new Set<string>();
       for (const f of files) {
+        bad.push(...headerIssues(f));
         for (const [names, terms] of modelRows(f)) {
           names.forEach((n) => listed.add(n));
           for (const t of terms) {

@@ -8,7 +8,7 @@ This is not an official OpenSpec or Palantir product. "Palantir" and "Foundry" a
 
 ## Status: what is tested
 
-- **Tested, offline, on Node 20.19.3:** the bundled CLI, the schema, 24 fixtures through the CLI, the TypeScript check, its pure TypeScript port and the Python port (all three agree), copying the CLI into a plain repository with no npm, the multi-repo store flow, and the checks on the skills, launchers and URLs. `maintainer/tests/run-all.sh` runs all of it.
+- **Tested, offline, on Node 20.19.3:** the bundled CLI, the schema, 25 fixtures through the CLI, the TypeScript check, its pure TypeScript port and the Python port (all three agree), copying the CLI into a plain repository with no npm, the multi-repo store flow, and the checks on the skills, launchers and URLs. `maintainer/tests/run-all.sh` runs all of it.
 - **Not tested:** anything inside Foundry (the Node version in Checks, whether Checks allow a child process, AIP skill size limits, menu names in AI FDE). No AI model has been run against the Gherkin, Foundry or design rules, so we do not know how well assistants follow them. OpenSpec declares Node 22.12 or later; we tested 20.
 - **Before a wider rollout:** run one real change through AI FDE and one through Claude Code or Continue, and read what they write.
 
@@ -111,10 +111,10 @@ The `foundry-spec-driven` schema gives every change these files. They live in `o
 
 | File | Holds |
 | --- | --- |
-| `proposal.md` | Why, the capabilities, and glossary changes (each term with its Ontology resources) |
+| `proposal.md` | Why, the capabilities, glossary changes (each term with its Ontology resources), and the Foundry resources touched, named once under Impact |
 | `open-questions.md` | Every knowledge gap: ID, stage, question, blocking, affects, owner, status, answer. Started with the proposal; every later file adds rows |
 | `specs/<capability>/spec.md` | Behavior in Gherkin and glossary terms, with `Ontology: <ApiName>, <ApiName>` lines |
-| `design.md` | Technical approach, with pointers to the two Foundry files |
+| `design.md` | Technical approach: context, decisions, risks, migration |
 | `ontology.md` | The data model: scope (space, owner), object types, link types (each tagged with its glossary term, with units and how links are stored), interfaces and shared properties, value types, the questions the model must answer, backing data (datasets, transforms, data quality), access, and a design review. "None" with a reason when the change touches no Ontology resource |
 | `logic.md` | Actions (rules, who may run them, side effects), functions (their edits and the function-backed action), writeback to other systems, AIP Logic and agents with evaluation cases |
 | `tasks.md` | Checklist in dependency order, each task with a `Verify:` line |

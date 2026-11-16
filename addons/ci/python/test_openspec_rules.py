@@ -217,6 +217,35 @@ def model_rows(f: Path):
     return out
 
 
+# The template headers are the contract: a renamed heading or column would silently escape the row checks.
+REQUIRED = {"ontology.md": ["Object types", "Link types"], "logic.md": ["Actions"]}
+
+
+def header_issues(f: Path):
+    lines = f.read_text(encoding="utf8").splitlines()
+    body = [l for i, l in enumerate(lines) if not (i == 0 and l.startswith("# ")) and l.strip()]
+    if body and body[0].strip() == "None":  # the whole file is "None" and a reason
+        return []
+    out = []
+    for name in REQUIRED[f.name]:
+        starts = [i for i, l in enumerate(lines) if l.strip() == "## " + name]
+        if not starts:
+            out.append(f"{rel(f)}: section '## {name}' is missing (keep the template headings)")
+            continue
+        start = starts[0]
+        end = next((i for i, l in enumerate(lines) if i > start and l.startswith("## ")), len(lines))
+        sec = lines[start + 1:end]
+        header = next((l for l in sec if l.strip().startswith("|")), None)
+        if header is None:
+            if not any(l.strip() == "None" for l in sec):
+                out.append(f"{rel(f)}: '## {name}' has no table and no \"None\"")
+            continue
+        cells = [x.strip() for x in header.strip().strip("|").split("|")]
+        if not cells[0].lower().startswith("api name") or not any(x.lower().startswith("glossary term") for x in cells):
+            out.append(f"{rel(f)}: the table under '## {name}' must keep the headers 'API name' and 'Glossary term'")
+    return out
+
+
 @unittest.skipIf(SKIP_GLOSSARY or SATELLITE, "glossary rules skipped")
 class GlossaryRules(unittest.TestCase):
     def test_definitions(self):
@@ -270,6 +299,7 @@ class GlossaryRules(unittest.TestCase):
                 continue
             listed = set()
             for f in files:
+                bad += header_issues(f)
                 for names, terms in model_rows(f):
                     listed.update(names)
                     for t in terms:

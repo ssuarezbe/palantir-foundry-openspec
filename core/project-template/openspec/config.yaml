@@ -14,6 +14,7 @@ rules:
   proposal:
     - Fill "Glossary changes" for every new or changed domain term. Write "None" if there are none.
     - Use glossary terms verbatim.
+    - Name the Foundry resources touched once, under Impact. Detail goes in ontology.md and logic.md.
   specs:
     - Use glossary terms verbatim. Never use a forbidden synonym from the glossary.
     - 'When a requirement touches Ontology object, link or action types, add one line "Ontology: <ApiName>, <ApiName>" under the requirement text.'
@@ -21,7 +22,6 @@ rules:
     - 'Write every scenario in Gherkin form: bold GIVEN, WHEN, THEN lines, with AND or BUT to continue a step. One behavior per scenario, exactly one WHEN, business language, no UI or code detail. Same steps with different data: use <placeholder> and an Examples table.'
     - 'When several repositories or Foundry resources implement a requirement, add one line under the requirement text: "Implemented in: <ontology action, function, app>".'
   design:
-    - Fill "Foundry resources" with a summary and pointers to ontology.md and logic.md. Write "None" if the change touches no Foundry resource.
     - Put unknowns in open-questions.md, not in design.md.
   ontology:
     - List object types, link types and access rules by exact API name with status new, changed or read. Do not redefine existing types.
@@ -30,6 +30,7 @@ rules:
     - Use API names, not RIDs. Give each object type a display name and description. Give properties a unit. A many-to-many link needs a join dataset listed under Backing data. List the questions the model must answer, each cited by a spec scenario.
     - Every new or changed object type names its primary key and its backing dataset, and that dataset appears under Backing data with its source, columns, cadence, owner and a data quality check. No credentials or customer data.
     - If the change touches no Ontology resource and no dataset, the file says "None" and why. Same for logic.md.
+    - Keep the template table headers. Properties, parameters, inputs and outputs go in bullet blocks under the tables, not in extra columns.
   logic:
     - List actions, functions and AIP Logic with API names, inputs, outputs and the Ontology types they read or edit.
     - State writeback to systems outside Foundry (target, mechanism, failure behavior) or "None". State who each access rule covers, including AI agents.

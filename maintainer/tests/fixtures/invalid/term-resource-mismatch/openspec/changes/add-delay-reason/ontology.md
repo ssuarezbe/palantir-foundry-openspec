@@ -8,15 +8,19 @@
 
 ## Object types
 
-| API name | Display name | Glossary term | Status | Primary key (type) | Backing dataset | Properties (API name: type, unit; mark derived or denormalized) | Description |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| `Shipment` | Shipment | `Shipment`, `Delay reason` | changed | `shipmentId` (String) | `shipments_clean` | `delayReason: String`, `delayReportedAt: Timestamp` | A load of goods moving between two sites. |
+| API name | Display name | Glossary term | Status | Primary key (type) | Backing dataset |
+| --- | --- | --- | --- | --- | --- |
+| `Shipment` | Shipment | `Shipment`, `Delay reason` | changed | `shipmentId` (String) | `shipments_clean` |
+
+- `Shipment`: A load of goods moving between two sites.
+  - `delayReason`: String, one of the allowed reasons (new)
+  - `delayReportedAt`: Timestamp, UTC (new)
 
 ## Link types
 
-| API name (each side) | Glossary term | From | To | Cardinality | Stored as | Status |
-| --- | --- | --- | --- | --- | --- | --- |
-| `carrier` / `shipments` | `Shipment`, `Carrier` | `Shipment` | `Carrier` | one-to-many | foreign key `carrierId` on `Shipment` | read |
+| API name (each side) | Glossary term | From → To | Cardinality | Stored as | Status |
+| --- | --- | --- | --- | --- | --- |
+| `carrier` / `shipments` | `Shipment`, `Carrier` | `Shipment` → `Carrier` | one-to-many | foreign key `carrierId` on `Shipment` | read |
 
 ## Interfaces and shared properties
 
@@ -34,9 +38,11 @@ None
 
 ## Backing data
 
-| Name | Kind (dataset, virtual table, model) | Status | Source (system or dataset) | Columns (name: type) | Update cadence | Owner |
-| --- | --- | --- | --- | --- | --- | --- |
-| `shipments_clean` | dataset | changed | `shipments_raw` | `delayReason: String`, `delayReportedAt: Timestamp` | hourly | Logistics team |
+| Name | Kind (dataset, virtual table, model) | Status | Source (system or dataset) | Update cadence | Owner |
+| --- | --- | --- | --- | --- | --- |
+| `shipments_clean` | dataset | changed | `shipments_raw` | hourly | Logistics team |
+
+- `shipments_clean`: `delayReason: String`, `delayReportedAt: Timestamp` (both new, empty for existing rows)
 
 Transforms and pipelines: None (the action writes the properties; the existing pipeline carries them through).
 

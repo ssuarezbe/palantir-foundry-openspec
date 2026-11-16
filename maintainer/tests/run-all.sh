@@ -41,7 +41,7 @@ grep -q "$(cat "$ROOT/VERSION")" "$ROOT/addons/cli/PIN.md" "$ROOT/README.md" && 
 echo "== 2. schema"
 cp -R "$ROOT/core/project-template" "$WORK/schemacheck"
 (cd "$WORK/schemacheck" && node "$CLI" schema validate foundry-spec-driven >"$WORK/o" 2>&1) && ok || bad "schema validate: $(cat "$WORK/o")"
-(cd "$WORK/schemacheck" && node "$CLI" new change graph >/dev/null 2>&1 && node "$CLI" status --change graph >"$WORK/o" 2>&1 && grep -q "0/8 artifacts" "$WORK/o" && grep -q "tasks (blocked by: specs, design, ontology, data, logic, open-questions)" "$WORK/o") && ok || bad "schema graph: expected 8 artifacts with tasks needing ontology, data, logic, open-questions: $(cat "$WORK/o")"
+(cd "$WORK/schemacheck" && node "$CLI" new change graph >/dev/null 2>&1 && node "$CLI" status --change graph >"$WORK/o" 2>&1 && grep -q "0/7 artifacts" "$WORK/o" && grep -q "tasks (blocked by: specs, design, ontology, logic, open-questions)" "$WORK/o") && ok || bad "schema graph: expected 7 artifacts with tasks needing ontology, logic, open-questions: $(cat "$WORK/o")"
 for f in "$ROOT/core/project-template/openspec/schemas/foundry-spec-driven/schema.yaml" "$ROOT/core/project-template/openspec/config.yaml" "$ROOT/core/aip-skills/openspec-propose.md" "$ROOT/core/aip-skills/openspec-explore.md"; do
   grep -q "ontology-design.md" "$f" && ok || bad "$f does not point to openspec/ontology-design.md"
 done
@@ -125,6 +125,37 @@ JEOF
   # No OPENSPEC_CLI: the test must find the bundle at tools/openspec/openspec-1.16.0/ on its own.
   (cd "$R" && "$JEST_ENV/node_modules/.bin/jest" --config "$R/jest.config.json" >"$WORK/j" 2>&1); check "copy-only repo [jest, default bundle path]" $? pass "$WORK/j"
 fi
+
+echo "== 10. drop-in folders"
+"$ROOT/maintainer/scripts/make-dropin.sh" "$WORK" >/dev/null
+DI=$WORK/drop-in
+for f in situation-1/openspec/config.yaml situation-2/tools/openspec/openspec-1.16.0/dist/cli/openspec.mjs situation-2/tests/openspec.test.ts situation-3/tests/openspec-rules.test.ts situation-4/tests/test_openspec_rules.py situation-5/.continue probe/tests/probe.test.ts; do
+  [ -e "$DI/$f" ] && ok || bad "drop-in is missing $f"
+done
+[ ! -e "$DI/situation-3/tools" ] && ok || bad "drop-in situation-3 must not carry the CLI"
+# Situation 4 straight from the drop-in: copy over an empty repo, run the Python check.
+R4=$WORK/dropin-repo; mkdir -p "$R4" && cp -R "$DI/situation-4/." "$R4/"
+(cd "$R4" && python3 -I tests/test_openspec_rules.py >"$WORK/p" 2>&1) && ok || bad "drop-in situation-4 does not pass: $(cat "$WORK/p")"
+# Situation 2 from the drop-in: the CLI runs and the probe can see it.
+R2=$WORK/dropin-repo2; mkdir -p "$R2" && cp -R "$DI/situation-2/." "$R2/" && cp -R "$DI/probe/tests/." "$R2/tests/"
+(cd "$R2" && sh tools/openspec/launchers/openspec validate --all --strict --no-interactive >"$WORK/o" 2>&1; ! grep -q ERROR "$WORK/o") && ok || bad "drop-in situation-2 CLI: $(cat "$WORK/o")"
+if [ $NOJEST = 0 ]; then
+  printf '{"compilerOptions":{"target":"ES2020","module":"commonjs","esModuleInterop":true,"types":["jest","node"],"typeRoots":["%s/node_modules/@types"]}}' "$JEST_ENV" >"$R2/tsconfig.json"
+  cat >"$R2/jest.config.json" <<JEOF
+{"rootDir":"$R2","testMatch":["**/tests/*.test.ts"],
+ "transform":{"^.+\\\\.ts\$":["$JEST_ENV/node_modules/ts-jest",{"tsconfig":"$R2/tsconfig.json"}]},
+ "moduleDirectories":["$JEST_ENV/node_modules"],"cache":false}
+JEOF
+  (cd "$R2" && "$JEST_ENV/node_modules/.bin/jest" --config "$R2/jest.config.json" >"$WORK/j" 2>&1); check "drop-in situation-2 [jest + probe]" $? pass "$WORK/j"
+  grep -q "use situation: 2" "$WORK/j" || grep -q "too old" "$WORK/j" && ok || bad "probe output missing: $(cat "$WORK/j")"
+fi
+
+echo "== 11. worked example (docs/example)"
+X=$WORK/example; mkdir -p "$X" && cp -R "$ROOT/core/project-template/openspec" "$X/openspec"
+cp "$ROOT/docs/example/openspec/glossary.md" "$X/openspec/" && cp -R "$ROOT/docs/example/openspec/changes/." "$X/openspec/changes/"
+(cd "$X" && node "$CLI" validate --all --strict --no-interactive >"$WORK/o" 2>&1) && ok || bad "docs/example does not validate: $(cat "$WORK/o")"
+(cd "$X" && node "$CLI" status --change add-delay-reason >"$WORK/o" 2>&1); grep -q "7/7 artifacts complete" "$WORK/o" && ok || bad "docs/example is missing an artifact: $(cat "$WORK/o")"
+(cd "$X" && OPENSPEC_ROOT=$X python3 -I "$ROOT/addons/ci/python/test_openspec_rules.py" >"$WORK/p" 2>&1) && ok || bad "docs/example fails the Python check: $(cat "$WORK/p")"
 
 echo "== 5. aip-skills"
 if grep -rnE '(^|[^A-Za-z/_.-])openspec[[:space:]]+[-a-z]' "$ROOT/core/aip-skills" >"$WORK/o"; then bad "CLI calls in aip-skills:"$'\n'"$(cat "$WORK/o")"; else ok; fi

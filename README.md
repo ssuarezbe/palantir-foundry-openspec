@@ -8,7 +8,7 @@ This is not an official OpenSpec or Palantir product. "Palantir" and "Foundry" a
 
 ## Status: what is tested
 
-- **Tested, offline, on Node 20.19.3:** the bundled CLI, the schema, 18 fixtures through the CLI, the TypeScript check, its pure TypeScript port and the Python port (all three agree), copying the CLI into a plain repository with no npm, the multi-repo store flow, and the checks on the skills, launchers and URLs. `maintainer/tests/run-all.sh` runs all of it.
+- **Tested, offline, on Node 20.19.3:** the bundled CLI, the schema, 24 fixtures through the CLI, the TypeScript check, its pure TypeScript port and the Python port (all three agree), copying the CLI into a plain repository with no npm, the multi-repo store flow, and the checks on the skills, launchers and URLs. `maintainer/tests/run-all.sh` runs all of it.
 - **Not tested:** anything inside Foundry (the Node version in Checks, whether Checks allow a child process, AIP skill size limits, menu names in AI FDE). No AI model has been run against the Gherkin, Foundry or design rules, so we do not know how well assistants follow them. OpenSpec declares Node 22.12 or later; we tested 20.
 - **Before a wider rollout:** run one real change through AI FDE and one through Claude Code or Continue, and read what they write.
 
@@ -32,6 +32,10 @@ Three ideas run through the kit:
 - **Gaps are recorded, not guessed.** Unknowns go in a log that blocks the tasks until answered.
 
 ## Pick your situation
+
+A filled-in change (all seven artifacts, a logistics example) is in `docs/example/`. Read it once before your first Propose.
+
+**Shortcut.** The release zip has a `drop-in/` folder with one ready-made folder per situation, laid out at final paths: copy its contents over your repository root. Not sure which situation you are in? Commit `drop-in/probe/tests/probe.test.ts` alone, read the Checks log (Node version, child process allowed, CLI present, which situation to use), then delete it.
 
 Foundry teams have different tools and different checks available. Find yours. Every situation uses the same files (`core/`); they differ in what checks the specs automatically. Full steps: `docs/setup.md`.
 
@@ -103,16 +107,15 @@ The only requirement is Node on the PATH. OpenSpec declares Node 22.12 or newer;
 
 ## What a change contains
 
-The `foundry-spec-driven` schema gives every change these files. They live in `openspec/changes/<name>/`. Write `proposal.md` first. After it, `open-questions.md`, the specs, `design.md`, `ontology.md` and `data.md` can be written in any order. `logic.md` needs `ontology.md`. `tasks.md` needs all the others.
+The `foundry-spec-driven` schema gives every change these files. They live in `openspec/changes/<name>/`. Write `proposal.md` first. After it, `open-questions.md`, the specs, `design.md` and `ontology.md` can be written in any order. `logic.md` needs `ontology.md`. `tasks.md` needs all the others.
 
 | File | Holds |
 | --- | --- |
 | `proposal.md` | Why, the capabilities, and glossary changes (each term with its Ontology resources) |
 | `open-questions.md` | Every knowledge gap: ID, stage, question, blocking, affects, owner, status, answer. Started with the proposal; every later file adds rows |
 | `specs/<capability>/spec.md` | Behavior in Gherkin and glossary terms, with `Ontology: <ApiName>, <ApiName>` lines |
-| `design.md` | Technical approach, with pointers to the three Foundry files |
-| `ontology.md` | The data model: scope (space, owner), object types, link types (each tagged with its glossary term, with units and how links are stored), interfaces and shared properties, value types, the questions the model must answer, access, and a design review |
-| `data.md` | Datasets (dataset, virtual table or model), transforms and pipelines, data quality checks |
+| `design.md` | Technical approach, with pointers to the two Foundry files |
+| `ontology.md` | The data model: scope (space, owner), object types, link types (each tagged with its glossary term, with units and how links are stored), interfaces and shared properties, value types, the questions the model must answer, backing data (datasets, transforms, data quality), access, and a design review. "None" with a reason when the change touches no Ontology resource |
 | `logic.md` | Actions (rules, who may run them, side effects), functions (their edits and the function-backed action), writeback to other systems, AIP Logic and agents with evaluation cases |
 | `tasks.md` | Checklist in dependency order, each task with a `Verify:` line |
 
@@ -191,9 +194,9 @@ Nothing here needs a runner. The rules live in files that an assistant reads and
 | `schemas/foundry-spec-driven/` | Templates and artifact instructions spell out the Foundry, Gherkin and design rules | Claude (CLI or MCP), Continue, anything that reads `openspec instructions` |
 | `config.yaml` | `rules:` repeat them per artifact | Same |
 | `core/aip-skills/` | Explore sketches, Propose writes, Apply acts out each `Verify:` line, Archive checks the scenarios still describe what was built | AI FDE, with no shell |
-| OpenSpec validation (`--strict`, or its TypeScript or Python port) | Checks that each requirement has a scenario with a `WHEN`/`GIVEN` and a `THEN`. The glossary check adds forbidden synonyms and Ontology names. | CI, if you run it |
+| OpenSpec validation (`--strict`, or its TypeScript or Python port) | Checks that each requirement has a scenario with a `WHEN`/`GIVEN` and a `THEN`. The glossary check adds forbidden synonyms, Ontology names and the open-questions gate (a change with `tasks.md` fails while a row is blocking and open). | CI, if you run it |
 
-The limit is plain: validation does not check keyword order, a single `WHEN`, business wording, the `Examples` table, the design review or the open questions. The assistant follows those rules and a reviewer checks them. No Cucumber or Behave runner is shipped. If a team later automates, each spec scenario maps one to one to a `.feature` scenario.
+The limit is plain: validation does not check keyword order, a single `WHEN`, business wording, the `Examples` table, the design review or the quality of an answer. The assistant follows those rules and a reviewer checks them. No Cucumber or Behave runner is shipped. If a team later automates, each spec scenario maps one to one to a `.feature` scenario.
 
 ## What is in the kit
 
@@ -212,7 +215,7 @@ palantir-foundry-openspec/
 | `core/aip-skills/` | AI FDE, or any assistant without a shell (situations 1 to 4) | `openspec-explore.md`, `-propose.md`, `-apply.md`, `-archive.md`. No CLI calls. The skills read the config, glossary and design rules from the template |
 | `addons/cli/` | Node 20+ and you want real validation | `openspec-1.16.0/` (bundled CLI), `launchers/` (sh and `.cmd`, telemetry off), `SHA256SUMS`, `PIN.md` (version, hashes, local patches), licence files |
 | `addons/workspace/` | You use Continue or Claude Code | `.continue/` and `.claude/`: the four workflows plus the `openspec-sync-specs` skill, which archive runs. Generated; do not edit |
-| `addons/ci/` | Your Checks can run Jest or Python | `typescript/` (`openspec.test.ts` runs the bundle; `openspec-rules.test.ts` is a pure TypeScript port with no child process; `glossary.test.ts`; `tsconfig.snippet.json`) and `python/test_openspec_rules.py`. All skip themselves in a repo whose config has `store:` |
+| `addons/ci/` | Your Checks can run Jest or Python | `typescript/` (`openspec.test.ts` runs the bundle; `probe.test.ts` is a one-off diagnostic; `openspec-rules.test.ts` is a pure TypeScript port with no child process; `glossary.test.ts`; `tsconfig.snippet.json`) and `python/test_openspec_rules.py`. All skip themselves in a repo whose config has `store:` |
 
 | Guide | Covers |
 | --- | --- |
@@ -229,7 +232,7 @@ One person owns the kit (today: Optivia Labs). Work on a connected machine. The 
 
 | Path | What it is for |
 | --- | --- |
-| `maintainer/scripts/` | `build.sh` (pinned dependency lock, `--release` zip), `sync-upstream.sh`, `make-workspace.py`, `setup-test-env.sh`, `pinned/` |
+| `maintainer/scripts/` | `build.sh` (pinned dependency lock, `--release` zip with `drop-in/`), `make-dropin.sh`, `sync-upstream.sh`, `make-workspace.py`, `setup-test-env.sh`, `pinned/` |
 | `maintainer/tests/` | `run-all.sh`, `fixtures/` (valid and invalid), `allowed-urls.txt`, `jest-env/` (ignored, about 58 MB) |
 | `maintainer/upstream/` | Untouched `init` output used to build `addons/workspace/` and to diff on upgrade, and the upstream licence |
 | `maintainer/UPGRADE.md` | How to move to a new OpenSpec version |

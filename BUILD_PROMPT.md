@@ -1,3 +1,5 @@
+> **Historical.** This is the original build spec. The layout, file names and docs below were replaced (see `CLAUDE.md` and `CHANGELOG.md`). Do not follow its layout.
+
 # Prompt: build `palantir-foundry-openspec`
 
 Paste everything below the line into Claude Code (or another coding agent) on a **connected build machine** with Node 22.12+, npm, Bun and Python 3.11+. Fill in the three values in `<angle brackets>` first.

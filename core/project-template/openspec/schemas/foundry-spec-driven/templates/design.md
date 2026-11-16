@@ -18,8 +18,12 @@
 
 ## Foundry resources
 
-<!-- Summary and pointers only. The detail is in ontology.md, logic.md and data.md. Write "None" if the change touches no Foundry resource. -->
+<!-- Summary and pointers only. The detail is in ontology.md and logic.md. Write "None" if the change touches no Foundry resource. -->
 
 ## Risks / Trade-offs
 
 <!-- Known risks and trade-offs -->
+
+## Migration Plan
+
+<!-- Deploy steps and rollback. Write "None" if nothing is deployed in stages. -->

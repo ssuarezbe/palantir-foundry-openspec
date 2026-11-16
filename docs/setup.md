@@ -6,11 +6,13 @@ Tested here: the bundle, the three checks and the copy-only install on macOS, No
 
 ## 1. Find your situation
 
+In the release zip, `drop-in/situation-N/` holds the files for each row below, laid out at final paths: copy its contents over your repository root, then do the tsconfig step and the `.gitignore` check. Not sure which row you are? Copy `drop-in/probe/tests/probe.test.ts` into your tests folder, commit it, read the Checks log and delete it. It always passes and prints the Node version, whether a child process is allowed, whether the CLI is present and which situation to use. If it fails to compile, your `tsconfig` does not accept Node types.
+
 | # | Your situation | Copy | Checked automatically | Checked only by a person |
 | --- | --- | --- | --- | --- |
 | 1 | **AI FDE only. Checks run no tests.** No shell, no Node | `core/` | Nothing about the specs | Everything. Use the review list in `docs/ai-fde.md` |
-| 2 | **TypeScript functions repository. Jest runs in Checks and can start a child process** | `core/`, `addons/cli/`, `openspec.test.ts`, `glossary.test.ts` | Full OpenSpec validation (strict), forbidden synonyms, empty definitions, Ontology names | Gherkin style, design review, open questions |
-| 3 | **TypeScript repository. Jest runs, but no child process, or the Node version in Checks is old or unknown** | `core/`, `openspec-rules.test.ts`, `glossary.test.ts` (no CLI) | The TypeScript port of the OpenSpec rules, forbidden synonyms, empty definitions, Ontology names | The same, plus the OpenSpec warnings the port does not cover (for example a Purpose under 50 characters) |
+| 2 | **TypeScript functions repository. Jest runs in Checks and can start a child process** | `core/`, `addons/cli/`, `openspec.test.ts`, `glossary.test.ts` | Full OpenSpec validation (strict), forbidden synonyms, empty definitions, Ontology names | Gherkin style, design review |
+| 3 | **TypeScript repository. Jest runs, but no child process, or the Node version in Checks is old or unknown** | `core/`, `openspec-rules.test.ts`, `glossary.test.ts` (no CLI) | The TypeScript port of the OpenSpec rules, forbidden synonyms, empty definitions, Ontology names | The same, plus the OpenSpec warnings the port does not cover (for example a proposal Why under 50 characters or a requirement over 500) |
 | 4 | **Python repository or Python checks. No Node** | `core/`, `test_openspec_rules.py` | Same as 3, in Python | Same as 3 |
 | 5 | **Laptop or Foundry VS Code workspace with Node 20+** | `core/`, `addons/cli/`, `addons/workspace/` | Whatever you run: `validate --strict` before each commit | The same as 2 |
 | 6 | **Several repositories, one product** | Put 1 to 5 in the spec home. Other repositories get one line (`docs/multi-repo.md`) | As in the spec home | As in the spec home |
@@ -100,6 +102,7 @@ Put the gate only in the spec home (`docs/multi-repo.md`). Other repositories de
 ## 4. Optional: Ontology names and branch protection
 
 - Put a JSON list of object type, link type and action type API names at `openspec/ontology.json`, for example `["Shipment", "Carrier"]`. The glossary check then fails on any `Ontology:` name or glossary Ontology resource not in the list. Without the file the check is skipped. Refresh the file when the Ontology changes.
+- To make the file, ask AI FDE (or the assistant with the Palantir MCP): "List the API names of every object type, link type (both sides) and action type in the Ontology `<name>` as one flat JSON array of strings. Output only the JSON. Do not guess names you cannot see." Save the answer as `openspec/ontology.json` and spot-check five names in Ontology Manager. Archive is a good moment to refresh it.
 - Protect the branch: require Checks to pass before merge and block direct commits to main.
 
 ### Read a failure
@@ -118,12 +121,16 @@ Put the gate only in the spec home (`docs/multi-repo.md`). Other repositories de
 | Scenario has WHEN/GIVEN and THEN | yes (strict) | yes | yes |
 | Requirement has SHALL or MUST | yes (strict) | yes | yes |
 | Change has a delta, or `skip_specs: true` | yes | yes | yes |
-| Other OpenSpec warnings (for example a short Purpose) | yes (strict) | no | no |
+| Main spec has a Purpose of 50+ characters, not `TBD` | yes (strict) | yes | yes |
+| Other OpenSpec warnings (for example a short proposal Why, a requirement over 500 characters) | yes (strict) | no | no |
+| Blocking open question with `tasks.md` | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
+| Resource tagged with a glossary term is on that term's glossary row; `Ontology:` name is in the change's `ontology.md` or `logic.md` | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
 | Forbidden synonym, empty definition, unmapped Ontology name | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
 
-No check covers keyword order, a single `WHEN`, business wording, the design review or open questions.
+No check covers keyword order, a single `WHEN`, business wording, the design review or the quality of an open-question answer.
+The open-questions gate is in `glossary.test.ts` (and the Python file): a change that has `tasks.md` fails while `open-questions.md` has a row with Blocking `yes` and Status `open`. It runs in situations 2 to 4, not in the bare CLI.
 Code spans and fenced code are ignored by the synonym check, and so are `Ontology:` and `Implemented in:` lines. Rows whose term starts with `Example:` are skipped. Archived changes are not scanned.
-The source repository tests the CLI, the TypeScript port and the Python port against 18 fixtures and requires the three to agree (`maintainer/tests/fixtures/`, not in the release zip).
+The source repository tests the CLI, the TypeScript port and the Python port against 24 fixtures and requires the three to agree (`maintainer/tests/fixtures/`, not in the release zip).
 
 ## 6. What to confirm in Foundry
 

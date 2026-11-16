@@ -5,7 +5,7 @@ context: |
   Specs use terms from openspec/glossary.md verbatim. Never use a forbidden synonym.
   Add every new domain noun to openspec/glossary.md in the same change that introduces it.
   Refer to Ontology object types, link types and action types by API name. Do not redefine them in specs.
-  The data model lives in ontology.md, behavior (actions, functions, AIP Logic) in logic.md, datasets and transforms in data.md.
+  The data model lives in ontology.md, behavior (actions, functions, AIP Logic) in logic.md, datasets and transforms under Backing data in ontology.md.
   Read openspec/ontology-design.md before you write or review ontology.md or logic.md. It holds the Ontology design rules and anti-patterns.
   Record every knowledge gap as a row in open-questions.md. Never guess. Never write tasks while a blocking question is open.
   Write all artifacts in plain, short, imperative English.
@@ -21,16 +21,15 @@ rules:
     - 'Write every scenario in Gherkin form: bold GIVEN, WHEN, THEN lines, with AND or BUT to continue a step. One behavior per scenario, exactly one WHEN, business language, no UI or code detail. Same steps with different data: use <placeholder> and an Examples table.'
     - 'When several repositories or Foundry resources implement a requirement, add one line under the requirement text: "Implemented in: <ontology action, function, app>".'
   design:
-    - Fill "Foundry resources" with a summary and pointers to ontology.md, logic.md and data.md. Write "None" if the change touches no Foundry resource.
+    - Fill "Foundry resources" with a summary and pointers to ontology.md and logic.md. Write "None" if the change touches no Foundry resource.
     - Put unknowns in open-questions.md, not in design.md.
   ontology:
     - List object types, link types and access rules by exact API name with status new, changed or read. Do not redefine existing types.
     - A glossary term can map to several object types and link types. Give the term on every row, and keep the glossary row listing all of them.
     - Check the model against openspec/ontology-design.md and fill "Design review" with every rule broken, the reason and when to revisit it, or "No deviations". Reject the anti-patterns in that file.
-    - Use API names, not RIDs. Give each object type a display name and description. Give properties a unit. A many-to-many link needs a join dataset listed in data.md. List the questions the model must answer, each cited by a spec scenario.
-    - Every new or changed object type names its primary key and its backing dataset, and that dataset appears in data.md.
-  data:
-    - List datasets, transforms and data quality checks. No credentials or customer data.
+    - Use API names, not RIDs. Give each object type a display name and description. Give properties a unit. A many-to-many link needs a join dataset listed under Backing data. List the questions the model must answer, each cited by a spec scenario.
+    - Every new or changed object type names its primary key and its backing dataset, and that dataset appears under Backing data with its source, columns, cadence, owner and a data quality check. No credentials or customer data.
+    - If the change touches no Ontology resource and no dataset, the file says "None" and why. Same for logic.md.
   logic:
     - List actions, functions and AIP Logic with API names, inputs, outputs and the Ontology types they read or edit.
     - State writeback to systems outside Foundry (target, mechanism, failure behavior) or "None". State who each access rule covers, including AI agents.
@@ -44,4 +43,4 @@ rules:
     - 'Under each task checkbox add one indented line: "- **Verify:** GIVEN <state>; WHEN <action>; THEN <result>." Or cite the spec scenario by name.'
     - When the change spans several repositories, make one task group per repository, ordered by dependency (Ontology, then functions, then apps). Name the repository in the group heading.
     - Add a task to update openspec/glossary.md when the proposal lists glossary changes.
-    - Every new or changed resource in ontology.md, logic.md and data.md has a task. Order the groups: datasets and transforms, object and link types, actions, functions, AIP Logic, apps.
+    - Every new or changed resource in ontology.md and logic.md has a task. Order the groups: datasets and transforms, object and link types, actions, functions, AIP Logic, apps.

@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.16.0-foundry.6 - 2026-11-15
+
+Schema `foundry-spec-driven` version 3. The bundle did not change (same SHA-256).
+
+- `data.md` is gone: its tables are the Backing data section of `ontology.md`. Seven artifacts per change. An in-flight change made with version 2 moves its `data.md` content into `ontology.md` and deletes the file. `ontology.md` and `logic.md` may hold only "None" and a reason when the change touches nothing they cover.
+- Two more glossary checks (TypeScript and Python): a resource tagged with a glossary term in `ontology.md` or `logic.md` must be on that term's glossary row; an `Ontology:` name in a change's spec must be in that change's `ontology.md` or `logic.md` (or in `ontology.json`). Fixtures `invalid/term-resource-mismatch`, `invalid/ontology-ref-not-listed`.
+- Fixed: the spec instruction's example scenario used a click; `design.md` template gains the Migration Plan section its instruction names; the example `tasks.md` uses the `- **Verify:**` form.
+
+- Open-questions gate checked: a change with `tasks.md` fails while `open-questions.md` has a row with Blocking `yes` and Status `open`. Added to `glossary.test.ts` and `test_openspec_rules.py` (situations 2 to 4). Fixtures `invalid/blocking-open-question`, `valid/open-question-answered`.
+- `drop-in/` in the release zip: one folder per situation at final paths, built by `maintainer/scripts/make-dropin.sh`; `run-all.sh` section 10 tests it.
+- Both ports now check a main spec's Purpose (present, 50+ characters, not `TBD`), as `validate --strict` does. Fixtures `invalid/purpose-too-brief`, `valid/main-spec`.
+- `docs/example/`: a complete example change (eight artifacts), validated by `run-all.sh` section 11.
+- `docs/setup.md`: a prompt that produces `ontology.json`.
+- `addons/ci/typescript/probe.test.ts`: a one-off test that prints the Node version, whether a child process is allowed, whether the CLI is present and which situation fits.
+
 ## 1.16.0-foundry.5 - 2026-11-12
 
 Schema `foundry-spec-driven` version 2. The bundle did not change (same SHA-256). In-flight changes made with version 1 need `ontology.md`, `data.md`, `logic.md` and `open-questions.md` before `tasks.md`.

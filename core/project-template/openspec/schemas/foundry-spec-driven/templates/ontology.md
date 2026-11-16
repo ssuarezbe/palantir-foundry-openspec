@@ -1,6 +1,6 @@
 # Ontology
 
-<!-- The data model this change adds, changes or reads. Read openspec/ontology-design.md first. A glossary term (business concept) can map to several object types and link types, and one object type can serve several terms: give the term on every row. Use "not modelled" if there is none. Use API names exactly as in Ontology Manager, never RIDs. Do not redefine existing types: list them as "read". Write "None" under a heading with nothing to record. -->
+<!-- The data model this change adds, changes or reads, and the data behind it. If the change touches no Ontology resource and no dataset, replace everything below with "None" and one line saying why. Read openspec/ontology-design.md first. A glossary term (business concept) can map to several object types and link types, and one object type can serve several terms: give the term on every row. Use "not modelled" if there is none. Use API names exactly as in Ontology Manager, never RIDs. Do not redefine existing types: list them as "read". Write "None" under a heading with nothing to record. -->
 
 ## Scope
 
@@ -43,6 +43,26 @@
 | ID | Question | Object and link types used |
 | --- | --- | --- |
 | `<id>` | <question> | `<ObjectType>`, `<LinkApiName>` |
+
+## Backing data
+
+<!-- Every dataset, virtual table or model behind a new or changed object type or link. No credentials or customer data. -->
+
+| Name | Kind (dataset, virtual table, model) | Status | Source (system or dataset) | Columns (name: type) | Update cadence | Owner |
+| --- | --- | --- | --- | --- | --- | --- |
+| `<dataset name>` | dataset | new / changed / read | `<source>` | `<name>: <type>` | `<cadence>` | `<team>` |
+
+Transforms and pipelines:
+
+| Name | Tool (Pipeline Builder, Python, SQL) | Inputs | Outputs | Trigger or schedule |
+| --- | --- | --- | --- | --- |
+| `<name>` | `<tool>` | `<dataset>` | `<dataset>` | `<trigger>` |
+
+Data quality:
+
+| Dataset | Check | Threshold or rule |
+| --- | --- | --- |
+| `<dataset name>` | `<check>` | `<rule in words>` |
 
 ## Access
 

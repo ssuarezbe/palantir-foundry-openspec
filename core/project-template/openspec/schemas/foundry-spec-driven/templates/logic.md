@@ -1,6 +1,6 @@
 # Logic
 
-<!-- The behavior this change adds, changes or reads. Read openspec/ontology-design.md first. Use API names. Write "None" under a heading with nothing to record. -->
+<!-- The behavior this change adds, changes or reads. Read openspec/ontology-design.md first. If the change adds or changes no action, function or AIP Logic, replace everything below with "None" and one line saying why. Use API names. Write "None" under a heading with nothing to record. -->
 
 ## Actions
 

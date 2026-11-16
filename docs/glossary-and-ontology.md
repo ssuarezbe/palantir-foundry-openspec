@@ -41,10 +41,10 @@ Read from Palantir's public pages on 2026-11-12. Check them against your enrollm
 | Finding | Used in the kit |
 | --- | --- |
 | Ontology design validation: a model is checked against real business questions (situation, contributing factors, impact), tried by experts and newer users with general tools, then by AIP Analyst or AI FDE. Duplicate concepts, unclear names, units or dates, and missing or misdirected links are the usual failures. Links should reflect real relationships, not source-system joins. | `ontology.md` has display name, description, units and a "Questions this model must answer" table. Each question needs a spec scenario. |
-| Ontology SQL: tables are object types and many-to-many links, addressed by RID. Columns use property API names. Many-to-many links need join tables. One-to-one and one-to-many links are joined directly. Read-only, 10,000 rows, 20 second timeout, Object Storage v2 only. | Specs and tables use API names, never RIDs. The link "Stored as" column names the foreign key or join dataset, and `data.md` lists the join dataset. Plan large reads outside Ontology SQL. |
+| Ontology SQL: tables are object types and many-to-many links, addressed by RID. Columns use property API names. Many-to-many links need join tables. One-to-one and one-to-many links are joined directly. Read-only, 10,000 rows, 20 second timeout, Object Storage v2 only. | Specs and tables use API names, never RIDs. The link "Stored as" column names the foreign key or join dataset, and Backing data lists the join dataset. Plan large reads outside Ontology SQL. |
 | Function edits: functions create, modify and delete objects and add or remove links. They take effect only through a function-backed action. Automate does not apply edits from function effects. Object set queries inside the function read pre-edit values. | `logic.md` lists the edits per object type and the function-backed action. Rules: write through actions. |
 | Ontology API basics: object types, properties, link types and action types form the object graph. Changes are eventually consistent: a new Ontology can return `OntologyNotFound` for a few minutes. | Confirm names with a retry before you call one missing. |
-| Ontology architecture: the Language (objects, links, properties, actions, automations, logic), the Engine (reads by SQL, subscriptions and materializations; writes as transactions, batch mutations, streams and change data capture to operational systems) and the Toolchain (OSDK, DevOps). Data sources include datasets, virtual tables and models. Logic is a rule, a model, an LLM-driven function or an orchestration. Security covers rows, columns and agents, which inherit from users or projects. Interfaces describe a shape shared by object types. | `ontology.md` has Interfaces and who each access rule covers. `data.md` has a kind column. `logic.md` has function kind and a "Writeback to other systems" table. Apps that use the regenerated SDK come last in the task order. |
+| Ontology architecture: the Language (objects, links, properties, actions, automations, logic), the Engine (reads by SQL, subscriptions and materializations; writes as transactions, batch mutations, streams and change data capture to operational systems) and the Toolchain (OSDK, DevOps). Data sources include datasets, virtual tables and models. Logic is a rule, a model, an LLM-driven function or an orchestration. Security covers rows, columns and agents, which inherit from users or projects. Interfaces describe a shape shared by object types. | `ontology.md` has Interfaces and who each access rule covers. Backing data has a kind column. `logic.md` has function kind and a "Writeback to other systems" table. Apps that use the regenerated SDK come last in the task order. |
 
 Not verified: palantir.com/platforms/ontology is rendered by script and returned only its title, so this section uses the docs pages for the Ontology overview and system architecture instead. The "dynamic" layer and object storage details are not described there. The Towards AI article returned an error (403), so nothing in the kit relies on it. The Ontology basics page did not define `apiName` versus RID in detail. Palantir's pages do not describe validation rules for actions or functions.
 
@@ -52,8 +52,7 @@ Not verified: palantir.com/platforms/ontology is rendered by script and returned
 
 | File | Records | Rule |
 | --- | --- | --- |
-| `ontology.md` | Object types (term, key, backing dataset, properties with units), link types (term, stored as), questions the model must answer, access | API names exact. Glossary term on every row. Status `new`, `changed` or `read`. Never redefine an existing type. |
-| `data.md` | Datasets, transforms, data quality checks | Every dataset behind an object type is here. No credentials or customer data. |
+| `ontology.md` | Object types (term, key, backing dataset, properties with units), link types (term, stored as), questions the model must answer, backing data (datasets, transforms, quality checks), access | API names exact. Glossary term on every row. Status `new`, `changed` or `read`. Never redefine an existing type. |
 | `logic.md` | Actions, functions, AIP Logic and agents | AIP Logic that writes goes through an action. Evaluation cases cite spec scenarios. |
 | `open-questions.md` | Every knowledge gap | A blocking, open row stops `tasks` and `apply`. Rows are never deleted. |
 
@@ -69,12 +68,12 @@ Not built. Add one only when a team needs it, and ask first: a new artifact chan
 | `app.md` | Workshop modules or OSDK apps: pages, variables, the actions and object types each uses, who uses it | Next, once apps are in scope. Today a task group per app. |
 | `automation.md` | Automate rules, schedules, notifications, webhooks and calls to external systems | Next. Today side effects are a column in `logic.md`. |
 | `rollout.md` | Branch or proposal flow, ordering of deploys, migration of existing objects, rollback | Medium. Today `design.md` "Migration Plan". |
-| `integration.md` | Sources, egress, external APIs, virtual tables | Low. Overlaps `data.md`. |
+| `integration.md` | Sources, egress, external APIs, virtual tables | Low. Overlaps Backing data in `ontology.md`. |
 | evaluation cases | AIP Evals test sets for AIP Logic and agents | Not a file: they are a column in `logic.md` that cites scenarios. |
 
 ## Where each rule lives
 
-- `core/project-template/openspec/schemas/foundry-spec-driven/`: the templates. Specs get an optional `Ontology:` line, proposals get Glossary changes, designs get Foundry resources, and the schema adds `ontology.md`, `data.md`, `logic.md` and `open-questions.md`.
+- `core/project-template/openspec/schemas/foundry-spec-driven/`: the templates. Specs get an optional `Ontology:` line, proposals get Glossary changes, designs get Foundry resources, and the schema adds `ontology.md`, `logic.md` and `open-questions.md`.
 - `core/project-template/openspec/config.yaml`: `context:` and `rules:` that every assistant reads.
 - AIP skills and workspace prompts: Explore confirms API names before you propose.
 - `addons/ci/`: the failing checks.

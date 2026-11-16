@@ -68,5 +68,6 @@ if [ "${1:-}" = "--release" ]; then
   N=palantir-foundry-openspec-$(cat "$ROOT/VERSION")
   rm -f "$N.zip"
   (cd "$ROOT" && zip -qr "../$N.zip" README.md CHANGELOG.md VERSION LICENSE THIRD_PARTY_NOTICES.md docs core addons -x '*/node_modules/*' '*.pyc' '*__pycache__/*' '.DS_Store' '*/.DS_Store')
+  S=$WORK/dropin && "$ROOT/maintainer/scripts/make-dropin.sh" "$S" && (cd "$S" && zip -qgr "$ROOT/../$N.zip" drop-in -x '.DS_Store' '*/.DS_Store')
   shasum -a 256 "$N.zip" | tee "$N.zip.sha256"
 fi

@@ -120,4 +120,90 @@ const rows = satellite ? [] : parseGlossary();
     }
     expect(bad).toEqual([]);
   });
+
+  // Rows of every table in ontology.md and logic.md whose header starts with "API name": [names, terms].
+  // A link row names both sides ("a / b"); a term cell may hold several terms.
+  function modelRows(file: string): Array<[string[], string[]]> {
+    const out: Array<[string[], string[]]> = [];
+    let termCol = -1, inTable = false;
+    for (const line of fs.readFileSync(file, "utf8").split(/\r?\n/)) {
+      if (!line.trim().startsWith("|")) { inTable = false; continue; }
+      const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      if (!inTable) {
+        inTable = /^api name/i.test(cells[0]);
+        termCol = cells.findIndex((c) => /^glossary term/i.test(c));
+        continue;
+      }
+      if (cells.every((c) => /^:?-+:?$/.test(c)) || cells[0].startsWith("`<") || cells[0].startsWith("<")) continue;
+      const names = cells[0].replace(/`/g, "").split(/[\/,]/).map((s) => s.trim()).filter(Boolean);
+      const terms = termCol < 0 ? [] : (cells[termCol] || "").replace(/`/g, "").split(",").map((s) => s.trim()).filter((t) => t && t.toLowerCase() !== "not modelled");
+      out.push([names, terms]);
+    }
+    return out;
+  }
+
+  it("keeps ontology.md and logic.md consistent with the glossary and the specs", () => {
+    const bad: string[] = [];
+    const byTerm = new Map(rows.map((r) => [r.term, r.api]));
+    const known = fs.existsSync(ontologyPath) ? new Set<string>(JSON.parse(fs.readFileSync(ontologyPath, "utf8"))) : null;
+    const changes = path.join(root, "openspec", "changes");
+    if (!fs.existsSync(changes)) return;
+    for (const e of fs.readdirSync(changes, { withFileTypes: true })) {
+      if (!e.isDirectory() || e.name === "archive") continue;
+      const dir = path.join(changes, e.name);
+      const files = ["ontology.md", "logic.md"].map((f) => path.join(dir, f)).filter((f) => fs.existsSync(f));
+      if (files.length === 0) continue;
+      const listed = new Set<string>();
+      for (const f of files) {
+        for (const [names, terms] of modelRows(f)) {
+          names.forEach((n) => listed.add(n));
+          for (const t of terms) {
+            const api = byTerm.get(t);
+            if (!api) bad.push(`glossary term '${t}' in ${rel(f)} is not in openspec/glossary.md`);
+            else if (!names.some((n) => api.includes(n))) bad.push(`'${names.join(" / ")}' in ${rel(f)} is tagged with term '${t}', but that glossary row does not list it`);
+          }
+        }
+      }
+      const walk = (d: string) => {
+        if (!fs.existsSync(d)) return;
+        for (const s of fs.readdirSync(d, { withFileTypes: true })) {
+          const p = path.join(d, s.name);
+          if (s.isDirectory()) walk(p);
+          else if (s.name === "spec.md") {
+            for (const m of stripCode(fs.readFileSync(p, "utf8"), false).matchAll(/^\s*Ontology:\s*(.+)$/gm)) {
+              for (const raw of m[1].split(",")) {
+                const n = raw.trim().replace(/`/g, "");
+                if (n && !n.startsWith("<") && !listed.has(n) && !(known && known.has(n))) bad.push(`Ontology reference '${n}' in ${rel(p)} is not listed in ontology.md or logic.md of the change`);
+              }
+            }
+          }
+        }
+      };
+      walk(path.join(dir, "specs"));
+    }
+    expect(bad).toEqual([]);
+  });
+
+  // The gate: a change with tasks.md may not have a blocking question that is still open.
+  it("has no blocking open question in a change that already has tasks", () => {
+    const bad: string[] = [];
+    const changes = path.join(root, "openspec", "changes");
+    if (!fs.existsSync(changes)) return;
+    for (const e of fs.readdirSync(changes, { withFileTypes: true })) {
+      const dir = path.join(changes, e.name);
+      const q = path.join(dir, "open-questions.md");
+      if (!e.isDirectory() || e.name === "archive" || !fs.existsSync(path.join(dir, "tasks.md")) || !fs.existsSync(q)) continue;
+      let col: string[] | null = null;
+      for (const line of fs.readFileSync(q, "utf8").split(/\r?\n/)) {
+        if (!line.trim().startsWith("|")) continue;
+        const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+        if (!col) { if (cells[0].toLowerCase() === "id") col = cells.map((c) => c.toLowerCase()); continue; }
+        if (cells.every((c) => /^:?-+:?$/.test(c))) continue;
+        if ((cells[col.indexOf("blocking")] || "").toLowerCase() === "yes" && (cells[col.indexOf("status")] || "").toLowerCase() === "open") {
+          bad.push(`open question '${cells[0]}' is blocking and open in ${rel(q)}, but the change already has tasks.md`);
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
 });

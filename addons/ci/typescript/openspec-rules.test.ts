@@ -112,7 +112,12 @@ function deltaSections(text: string): Record<string, string> {
     const errors: string[] = [];
     for (const f of mdFiles(path.join(os, "specs"))) {
       if (path.basename(f) !== "spec.md") continue;
-      for (const [header, body] of requirementBlocks(fs.readFileSync(f, "utf8"))) checkBlock(rel(f), header, body, errors);
+      const text = fs.readFileSync(f, "utf8");
+      // OpenSpec warns (an error under --strict) on a Purpose under 50 characters or a TBD placeholder.
+      const m = /^## Purpose\s*$([\s\S]*?)(?=^## |$(?![\r\n]))/m.exec(text);
+      if (!m) errors.push(`${rel(f)}: Spec must have a Purpose section`);
+      else if (m[1].trim().length < 50 || m[1].trim().toUpperCase().startsWith("TBD")) errors.push(`${rel(f)}: Purpose section is too brief (less than 50 characters) or still a placeholder`);
+      for (const [header, body] of requirementBlocks(text)) checkBlock(rel(f), header, body, errors);
     }
     expect(errors).toEqual([]);
   });

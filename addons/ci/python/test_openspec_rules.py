@@ -130,7 +130,14 @@ class OpenSpecRules(unittest.TestCase):
         for f in md_files(OS / "specs"):
             if f.name != "spec.md":
                 continue
-            for header, body in requirement_blocks(f.read_text(encoding="utf8")):
+            text = f.read_text(encoding="utf8")
+            # OpenSpec warns (an error under --strict) on a Purpose under 50 characters or a TBD placeholder.
+            m = re.search(r"^## Purpose\s*$([\s\S]*?)(?=^## |\Z)", text, re.M)
+            if not m:
+                errors.append(f"{rel(f)}: Spec must have a Purpose section")
+            elif len(m.group(1).strip()) < 50 or m.group(1).strip().upper().startswith("TBD"):
+                errors.append(f"{rel(f)}: Purpose section is too brief (less than 50 characters) or still a placeholder")
+            for header, body in requirement_blocks(text):
                 check_block(rel(f), header, body, errors)
         self.assertEqual(errors, [])
 
@@ -189,6 +196,27 @@ def strip_code(text: str, inline: bool) -> str:
     return re.sub(r"`[^`\n]*`", "", t) if inline else t
 
 
+def model_rows(f: Path):
+    """Rows of every table in ontology.md or logic.md whose header starts with "API name": (names, terms).
+    A link row names both sides ("a / b"); a term cell may hold several terms."""
+    out, term_col, in_table = [], -1, False
+    for line in f.read_text(encoding="utf8").splitlines():
+        if not line.strip().startswith("|"):
+            in_table = False
+            continue
+        cells = [x.strip() for x in line.strip().strip("|").split("|")]
+        if not in_table:
+            in_table = cells[0].lower().startswith("api name")
+            term_col = next((i for i, x in enumerate(cells) if x.lower().startswith("glossary term")), -1)
+            continue
+        if all(re.fullmatch(r":?-+:?", x) for x in cells) or cells[0].startswith(("`<", "<")):
+            continue
+        names = [n.strip() for n in re.split(r"[/,]", cells[0].replace("`", "")) if n.strip()]
+        terms = [] if term_col < 0 or term_col >= len(cells) else [t.strip() for t in cells[term_col].replace("`", "").split(",") if t.strip() and t.strip().lower() != "not modelled"]
+        out.append((names, terms))
+    return out
+
+
 @unittest.skipIf(SKIP_GLOSSARY or SATELLITE, "glossary rules skipped")
 class GlossaryRules(unittest.TestCase):
     def test_definitions(self):
@@ -228,6 +256,59 @@ class GlossaryRules(unittest.TestCase):
                     name = raw.strip().replace("`", "")
                     if name and not name.startswith("<") and name not in known:
                         bad.append(f"Ontology reference '{name}' in {rel(f)} is not in openspec/ontology.json")
+        self.assertEqual(bad, [])
+
+    def test_model_consistency(self):
+        """Resources tagged with a glossary term are on that term's row; Ontology: names are listed in ontology.md or logic.md."""
+        bad = []
+        by_term = {r["term"]: r["api"] for r in parse_glossary()}
+        p = OS / "ontology.json"
+        known = set(json.loads(p.read_text(encoding="utf8"))) if p.exists() else None
+        for c in open_changes():
+            files = [c / f for f in ("ontology.md", "logic.md") if (c / f).exists()]
+            if not files:
+                continue
+            listed = set()
+            for f in files:
+                for names, terms in model_rows(f):
+                    listed.update(names)
+                    for t in terms:
+                        if t not in by_term:
+                            bad.append(f"glossary term '{t}' in {rel(f)} is not in openspec/glossary.md")
+                        elif not any(n in by_term[t] for n in names):
+                            bad.append(f"'{' / '.join(names)}' in {rel(f)} is tagged with term '{t}', but that glossary row does not list it")
+            for f in md_files(c / "specs"):
+                if f.name != "spec.md":
+                    continue
+                text = strip_code(f.read_text(encoding="utf8"), False)
+                for m in re.finditer(r"^\s*Ontology:\s*(.+)$", text, re.M):
+                    for raw in m.group(1).split(","):
+                        n = raw.strip().replace("`", "")
+                        if n and not n.startswith("<") and n not in listed and not (known and n in known):
+                            bad.append(f"Ontology reference '{n}' in {rel(f)} is not listed in ontology.md or logic.md of the change")
+        self.assertEqual(bad, [])
+
+    def test_blocking_open_questions(self):
+        """The gate: a change with tasks.md may not have a blocking question that is still open."""
+        bad = []
+        for c in open_changes():
+            q = c / "open-questions.md"
+            if not (c / "tasks.md").exists() or not q.exists():
+                continue
+            col = None
+            for line in q.read_text(encoding="utf8").splitlines():
+                if not line.strip().startswith("|"):
+                    continue
+                cells = [x.strip() for x in line.strip().strip("|").split("|")]
+                if col is None:
+                    if cells[0].lower() == "id":
+                        col = [x.lower() for x in cells]
+                    continue
+                if all(re.fullmatch(r":?-+:?", x) for x in cells):
+                    continue
+                cells += [""] * (len(col) - len(cells))
+                if cells[col.index("blocking")].lower() == "yes" and cells[col.index("status")].lower() == "open":
+                    bad.append(f"open question '{cells[0]}' is blocking and open in {rel(q)}, but the change already has tasks.md")
         self.assertEqual(bad, [])
 
 

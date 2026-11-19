@@ -36,7 +36,7 @@ echo "== 1. bundle integrity"
 [ "$(node "$CLI" --version 2>/dev/null)" = "1.16.0" ] && ok || bad "bundle --version is not 1.16.0"
 grep -q "$(cut -d' ' -f1 "$ROOT/addons/cli/SHA256SUMS")" "$ROOT/addons/cli/PIN.md" && ok || bad "upstream/PIN.md does not list the SHA-256 in cli/SHA256SUMS"
 [ -f "$ROOT/maintainer/scripts/pinned/package-lock.json" ] && ok || bad "scripts/pinned/package-lock.json missing: builds are not reproducible"
-grep -q "$(cat "$ROOT/VERSION")" "$ROOT/addons/cli/PIN.md" "$ROOT/README.md" && ok || bad "VERSION is not in PIN.md and README.md"
+for f in "$ROOT/addons/cli/PIN.md" "$ROOT/README.md"; do grep -q "$(cat "$ROOT/VERSION")" "$f" && ok || bad "VERSION is not in $f"; done
 
 echo "== 2. schema"
 cp -R "$ROOT/core/project-template" "$WORK/schemacheck"
@@ -152,10 +152,18 @@ fi
 
 echo "== 11. worked example (docs/example)"
 X=$WORK/example; mkdir -p "$X" && cp -R "$ROOT/core/project-template/openspec" "$X/openspec"
-cp "$ROOT/docs/example/openspec/glossary.md" "$X/openspec/" && cp -R "$ROOT/docs/example/openspec/changes/." "$X/openspec/changes/"
+cp "$ROOT/docs/example/openspec/glossary.md" "$ROOT/docs/example/openspec/INDEX.md" "$X/openspec/" && cp -R "$ROOT/docs/example/openspec/changes/." "$X/openspec/changes/"
 (cd "$X" && node "$CLI" validate --all --strict --no-interactive >"$WORK/o" 2>&1) && ok || bad "docs/example does not validate: $(cat "$WORK/o")"
 (cd "$X" && node "$CLI" status --change add-delay-reason >"$WORK/o" 2>&1); grep -q "7/7 artifacts complete" "$WORK/o" && ok || bad "docs/example is missing an artifact: $(cat "$WORK/o")"
 (cd "$X" && OPENSPEC_ROOT=$X python3 -I "$ROOT/addons/ci/python/test_openspec_rules.py" >"$WORK/p" 2>&1) && ok || bad "docs/example fails the Python check: $(cat "$WORK/p")"
+
+echo "== 12. index works with no shell"
+for f in openspec-explore openspec-propose openspec-archive; do grep -q "INDEX.md" "$ROOT/core/aip-skills/$f.md" && ok || bad "$f.md does not mention INDEX.md"; done
+grep -q "Audit the index" "$ROOT/core/aip-skills/openspec-explore.md" && ok || bad "explore skill has no 'Audit the index' section"
+for f in "$ROOT/core/project-template/openspec/INDEX.md" "$ROOT/core/project-template/openspec/config.yaml" "$ROOT/core/aip-skills/openspec-propose.md" "$ROOT/core/aip-skills/openspec-archive.md"; do
+  grep -q "roughly 300 rows" "$f" && grep -q "splits per capability" "$f" && ok || bad "$f lacks the 300-row ceiling rule"
+done
+[ -f "$WORK/drop-in/situation-1/openspec/INDEX.md" ] && ok || bad "drop-in situation-1 has no INDEX.md"
 
 echo "== 5. aip-skills"
 if grep -rnE '(^|[^A-Za-z/_.-])openspec[[:space:]]+[-a-z]' "$ROOT/core/aip-skills" >"$WORK/o"; then bad "CLI calls in aip-skills:"$'\n'"$(cat "$WORK/o")"; else ok; fi

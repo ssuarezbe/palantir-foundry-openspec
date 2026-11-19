@@ -39,8 +39,9 @@ If Checks run no tests on the specs (situation 1), nothing checks what AI FDE wr
 6. `ontology.md` has a "Design review" table filled in against `openspec/ontology-design.md`.
 7. No row in `open-questions.md` is blocking and open before `tasks.md` or any code.
 8. Every task has a `Verify:` line, and each task's checkbox is ticked only when its `Verify:` line was acted out.
+9. A change that touches `openspec/specs/` or `openspec/changes/archive/` also changes `openspec/INDEX.md` in the same pull request (the diff shows it), with API names only. Check the `Last audited:` date: older than a month or a release, ask for the Explore skill's "Audit the index".
 
-Items 1 to 4 are what the automatic checks apply in the other situations. Add a gate later (situation 2, 3 or 4) and these four stop depending on a person.
+Items 1 to 4 and the index names in item 9 are what the automatic checks apply in the other situations. Add a gate later (situation 2, 3 or 4) and these four stop depending on a person.
 
 ## What to confirm in Foundry
 

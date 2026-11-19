@@ -15,6 +15,12 @@
 
 None
 
+## Automations
+
+| Name | Trigger (time, object set change, threshold) | Condition | Effect (action, notification, function) | Status |
+| --- | --- | --- | --- | --- |
+| `Notify planner of delay` | object set change: a `Shipment` gets a Delay reason | the reason is Customs or Breakdown | notification to the planners group | new |
+
 ## Writeback to other systems
 
 None

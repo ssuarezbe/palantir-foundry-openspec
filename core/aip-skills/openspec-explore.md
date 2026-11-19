@@ -16,7 +16,7 @@ OpenSpec keeps specs in the `openspec/` folder of the Code Repository. Every pat
 ## Steps
 
 1. Read `openspec/config.yaml`. Note the `context:` and `rules:` text. They override your defaults.
-2. Read `openspec/glossary.md`. Note each term, the Ontology resources (object, link and action types, one or several) that represent it, and its forbidden synonyms.
+2. Read `openspec/INDEX.md`: the map of capabilities, Foundry resources and open changes. Follow its pointers instead of searching. Then read `openspec/glossary.md`. Note each term, the Ontology resources (object, link and action types, one or several) that represent it, and its forbidden synonyms.
 3. Read `openspec/ontology-design.md`. Use it to challenge the idea: one entity per object type, real relationships, no anti-patterns.
 4. List the folders in `openspec/specs/`. Each folder is a capability. Open the ones that look related and read them in full.
 5. List the folders in `openspec/changes/`, skipping `archive/`. Each is an open change. Read the `proposal.md` of any that overlap.
@@ -47,6 +47,17 @@ Do this before the user proposes anything that names an Ontology object type or 
 - List nouns that have no term. These need a row in `openspec/glossary.md` in the change.
 - Flag any word the glossary lists as a forbidden synonym.
 - A term is a business concept, not an Ontology type. Ask which object types and link types represent it. One term may need several, and one object type may serve several terms. Report the mapping in your summary.
+
+## Audit the index
+
+Do this when the user asks to audit or check the index. It needs no code: list folders and compare. Report only. Change `openspec/INDEX.md` only after the user says yes.
+
+1. List the folders in `openspec/specs/`. Each needs a row under Capabilities, and each row needs a folder.
+2. List the folders in `openspec/changes/`, skipping `archive/`. Each needs a row under In flight, and each row needs a folder. Count each change's rows that are blocking and open in `open-questions.md` and compare with the row.
+3. Read every `Ontology:` line in the main specs. Each name needs a row under Resources. Each row needs a spec that still cites it, or `removed <date>` under Last changed.
+4. List the folders in `openspec/changes/archive/`. Each Last changed value must be one of them.
+5. Confirm each Resources name with the Ontology tools or `openspec/ontology.json`. Report names you cannot confirm.
+6. Report the findings as a short list. After the fixes, set the `Last audited:` line to today's date. Ask for the date if you do not know it.
 
 ## Ending
 

@@ -66,7 +66,7 @@ Not built. Add one only when a team needs it, and ask first: a new artifact chan
 | --- | --- | --- |
 | `access.md` | Markings, restricted views, object and property security, project roles, who may run each action | High in regulated work. Today a short Access section in `ontology.md`. |
 | `app.md` | Workshop modules or OSDK apps: pages, variables, the actions and object types each uses, who uses it | Next, once apps are in scope. Today a task group per app. |
-| `automation.md` | Automate rules, schedules, notifications, webhooks and calls to external systems | Next. Today side effects are a column in `logic.md`. |
+| `automation.md` | Automate rules, schedules, notifications, webhooks and calls to external systems | Partly built: `logic.md` has an Automations section (trigger, condition, effect). A separate file only if a team needs more. |
 | `rollout.md` | Branch or proposal flow, ordering of deploys, migration of existing objects, rollback | Medium. Today `design.md` "Migration Plan". |
 | `integration.md` | Sources, egress, external APIs, virtual tables | Low. Overlaps Backing data in `ontology.md`. |
 | evaluation cases | AIP Evals test sets for AIP Logic and agents | Not a file: they are a column in `logic.md` that cites scenarios. |

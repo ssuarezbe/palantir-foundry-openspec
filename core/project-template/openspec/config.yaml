@@ -6,6 +6,7 @@ context: |
   Add every new domain noun to openspec/glossary.md in the same change that introduces it.
   Refer to Ontology object types, link types and action types by API name. Do not redefine them in specs.
   The data model lives in ontology.md, behavior (actions, functions, AIP Logic) in logic.md, datasets and transforms under Backing data in ontology.md.
+  Start at openspec/INDEX.md: it maps capabilities, Foundry resources (objects, links, actions, functions, automations) and open changes. Keep it true: Propose adds an In flight row, Archive moves it into Capabilities and Resources. One file works to roughly 300 rows. After that it splits per capability, with the root as a map.
   Read openspec/ontology-design.md before you write or review ontology.md or logic.md. It holds the Ontology design rules and anti-patterns.
   Record every knowledge gap as a row in open-questions.md. Never guess. Never write tasks while a blocking question is open.
   Write all artifacts in plain, short, imperative English.
@@ -14,6 +15,7 @@ rules:
   proposal:
     - Fill "Glossary changes" for every new or changed domain term. Write "None" if there are none.
     - Use glossary terms verbatim.
+    - Add a row under In flight in openspec/INDEX.md (API names only, no RIDs, no properties). When its Resources table passes 300 rows, split it per capability under openspec/index/ and keep the root as a map.
     - Name the Foundry resources touched once, under Impact. Detail goes in ontology.md and logic.md.
   specs:
     - Use glossary terms verbatim. Never use a forbidden synonym from the glossary.
@@ -33,6 +35,7 @@ rules:
     - Keep the template table headers. Properties, parameters, inputs and outputs go in bullet blocks under the tables, not in extra columns.
   logic:
     - List actions, functions and AIP Logic with API names, inputs, outputs and the Ontology types they read or edit.
+    - List automations (trigger, condition, effect) under Automations, or "None". An automation that changes the Ontology applies an action.
     - State writeback to systems outside Foundry (target, mechanism, failure behavior) or "None". State who each access rule covers, including AI agents.
     - Design actions around business operations, not single properties. A function rule cannot be combined with other rules. Link rules work for many-to-many links only. Submission criteria say who may run the action and what must be true.
     - A function that edits objects or links is used by a function-backed action, which is named. Automate and AIP Logic write through actions.

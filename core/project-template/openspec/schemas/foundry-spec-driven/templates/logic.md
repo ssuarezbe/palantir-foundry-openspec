@@ -27,6 +27,14 @@
   - Inputs: `<name>: <type>`
   - Output: `<type>`
 
+## Automations
+
+<!-- Rules that run without a person: Automate or similar. Write "None" if unused. An automation applies an action, never a function's edits. -->
+
+| Name | Trigger (time, object set change, threshold) | Condition | Effect (action, notification, function) | Status |
+| --- | --- | --- | --- | --- |
+| `<automation name>` | `<trigger>` | `<condition in words>` | `<ActionApiName>` | new / changed / read |
+
 ## Writeback to other systems
 
 <!-- Changes that must reach an operational system outside Foundry. Write "None" if the Ontology is the only record. -->

@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## State of this repository
 
-Built (version `1.16.0-foundry.6`, see `CHANGELOG.md`). `BUILD_PROMPT.md` is the original build spec; the layout below replaces its layout (it was regrouped by audience in `foundry.4`).
+Built (version `1.16.0-foundry.7`, see `CHANGELOG.md`). `BUILD_PROMPT.md` is the original build spec; the layout below replaces its layout (it was regrouped by audience in `foundry.4`).
 
-Layout: `core/` (what every team copies), `addons/` (per-environment), `maintainer/` (build, test, provenance; not in the release zip), `docs/` (four guides). Top level also has `README.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `THIRD_PARTY_NOTICES.md`.
+Layout: `core/` (what every team copies), `addons/` (per-environment), `maintainer/` (build, test, provenance; not in the release zip), `docs/` (five guides). Top level also has `README.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `THIRD_PARTY_NOTICES.md`.
 
 Commands:
 - `maintainer/tests/run-all.sh` — every check, offline. `--no-jest` skips the Jest part. Jest needs `maintainer/scripts/setup-test-env.sh` once on a connected machine (installs into the gitignored `maintainer/tests/jest-env/node_modules`).
@@ -33,7 +33,7 @@ CI gate: TypeScript functions repos run Jest on every commit; a Python standard-
 
 ## Architecture
 
-- `core/project-template/` — what a new Foundry project starts from: `openspec/config.yaml` (schema + context + rules for glossary, Ontology, Gherkin), `openspec/glossary.md` template, the `foundry-spec-driven` schema (a fork of `spec-driven` adding Ontology references, glossary changes, Foundry resources, `Implemented in:`, Gherkin, plus the artifacts `ontology` (with Backing data), `logic` and `open-questions`; graph: **proposal → specs / design / ontology / open-questions; ontology → logic; all → tasks → apply**), empty `specs/` and `changes/archive/`.
+- `core/project-template/` — what a new Foundry project starts from: `openspec/config.yaml` (schema + context + rules for glossary, Ontology, Gherkin), `openspec/glossary.md` template, `openspec/INDEX.md` (the agent map; skills maintain it by hand, no generator on purpose; the ports check drift; `docs/index-options.md`), the `foundry-spec-driven` schema (a fork of `spec-driven` adding Ontology references, glossary changes, Foundry resources, `Implemented in:`, Gherkin, plus the artifacts `ontology` (with Backing data), `logic` and `open-questions`; graph: **proposal → specs / design / ontology / open-questions; ontology → logic; all → tasks → apply**), empty `specs/` and `changes/archive/`.
 - `core/aip-skills/` — four AIP skills (explore/propose/apply/archive), each a `Name:`/`Description:` + Markdown body, each under ~150 lines. Hard rule: **zero `openspec` CLI calls** in this directory — every step is written out manually. Enforced by a grep-based test.
 - `addons/cli/` — `openspec-1.16.0/` (the bundle, `package.json`, `schemas/`; the bundle reads `package.json` two directories above itself, so don't flatten it; `bun build --compile` does not work), `launchers/` (sh and `.cmd`, always set `OPENSPEC_TELEMETRY=0`), `SHA256SUMS`, `PIN.md` (version, hashes, local patches), and the bundled-package licences.
 - `addons/workspace/` — `.continue/` and `.claude/` generated from upstream output, CLI calls rewritten to `./tools/openspec/launchers/openspec`.

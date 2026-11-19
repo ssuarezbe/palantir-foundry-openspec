@@ -1,6 +1,6 @@
 # palantir-foundry-openspec
 
-An internal kit of [OpenSpec](https://github.com/Fission-AI/OpenSpec) 1.16.0 for teams that build on Palantir Foundry in a network with no npm access. Version `1.16.0-foundry.5`, maintained by Optivia Labs.
+An internal kit of [OpenSpec](https://github.com/Fission-AI/OpenSpec) 1.16.0 for teams that build on Palantir Foundry in a network with no npm access. Version `1.16.0-foundry.7`, maintained by Optivia Labs.
 
 Teams that build on Foundry describe a change in one place, before they build it: why, what behavior, which Ontology object types, link types, actions, functions and datasets, and what is still unknown. An AI assistant (AI FDE, Claude Code or Continue) writes those files, a person reviews them, and the assistant then builds from them. This kit supplies the rules, templates and skills for that, adapted to Foundry, plus a bundled OpenSpec CLI for teams that can run Node.
 
@@ -8,7 +8,7 @@ This is not an official OpenSpec or Palantir product. "Palantir" and "Foundry" a
 
 ## Status: what is tested
 
-- **Tested, offline, on Node 20.19.3:** the bundled CLI, the schema, 25 fixtures through the CLI, the TypeScript check, its pure TypeScript port and the Python port (all three agree), copying the CLI into a plain repository with no npm, the multi-repo store flow, and the checks on the skills, launchers and URLs. `maintainer/tests/run-all.sh` runs all of it.
+- **Tested, offline, on Node 20.19.3:** the bundled CLI, the schema, 27 fixtures through the CLI, the TypeScript check, its pure TypeScript port and the Python port (all three agree), copying the CLI into a plain repository with no npm, the multi-repo store flow, and the checks on the skills, launchers and URLs. `maintainer/tests/run-all.sh` runs all of it.
 - **Not tested:** anything inside Foundry (the Node version in Checks, whether Checks allow a child process, AIP skill size limits, menu names in AI FDE). No AI model has been run against the Gherkin, Foundry or design rules, so we do not know how well assistants follow them. OpenSpec declares Node 22.12 or later; we tested 20.
 - **Before a wider rollout:** run one real change through AI FDE and one through Claude Code or Continue, and read what they write.
 
@@ -18,10 +18,10 @@ Every change follows four steps. Each step is a skill (AI FDE) or a command (Cla
 
 | Step | Skill or command | What happens |
 | --- | --- | --- |
-| Explore | `OpenSpec Explore`, `/opsx:explore` | Read-only thinking. Confirms Ontology API names, matches words to the glossary, sketches scenarios and open questions. |
+| Explore | `OpenSpec Explore`, `/opsx:explore` | Read-only thinking. Starts at `INDEX.md`, confirms Ontology API names, matches words to the glossary, sketches scenarios and open questions. Can audit the index. |
 | Propose | `OpenSpec Propose`, `/opsx:propose` | Writes the change files (next section) on a branch. Checks then validate them. |
 | Apply | `OpenSpec Apply`, `/opsx:apply` | Builds the tasks one at a time, acts out each `Verify:` line and ticks the box. Stops on a blocking open question. |
-| Archive | `OpenSpec Archive`, `/opsx:archive` | After the work merges, folds the spec changes into `openspec/specs/` and moves the change folder to `openspec/changes/archive/`. The Foundry files stay in that folder with the change. |
+| Archive | `OpenSpec Archive`, `/opsx:archive` | After the work merges, folds the spec changes into `openspec/specs/`, moves the change folder to `openspec/changes/archive/` and updates `openspec/INDEX.md`. The Foundry files stay in that folder with the change. |
 
 In Continue the commands are written `/opsx-propose` and so on.
 
@@ -33,7 +33,7 @@ Three ideas run through the kit:
 
 ## Pick your situation
 
-A filled-in change (all seven artifacts, a logistics example) is in `docs/example/`. Read it once before your first Propose.
+A filled-in change (all seven artifacts, a logistics example) is in `docs/example/`. Read it once before your first Propose. Agents start at `openspec/INDEX.md`, the map of specs, resources and open changes; it needs no code (`docs/index-options.md`).
 
 **Shortcut.** The release zip has a `drop-in/` folder with one ready-made folder per situation, laid out at final paths: copy its contents over your repository root. Not sure which situation you are in? Commit `drop-in/probe/tests/probe.test.ts` alone, read the Checks log (Node version, child process allowed, CLI present, which situation to use), then delete it.
 
@@ -116,7 +116,7 @@ The `foundry-spec-driven` schema gives every change these files. They live in `o
 | `specs/<capability>/spec.md` | Behavior in Gherkin and glossary terms, with `Ontology: <ApiName>, <ApiName>` lines |
 | `design.md` | Technical approach: context, decisions, risks, migration |
 | `ontology.md` | The data model: scope (space, owner), object types, link types (each tagged with its glossary term, with units and how links are stored), interfaces and shared properties, value types, the questions the model must answer, backing data (datasets, transforms, data quality), access, and a design review. "None" with a reason when the change touches no Ontology resource |
-| `logic.md` | Actions (rules, who may run them, side effects), functions (their edits and the function-backed action), writeback to other systems, AIP Logic and agents with evaluation cases |
+| `logic.md` | Actions (rules, who may run them, side effects), functions (their edits and the function-backed action), automations (trigger, condition, effect), writeback to other systems, AIP Logic and agents with evaluation cases |
 | `tasks.md` | Checklist in dependency order, each task with a `Verify:` line |
 
 Files that sit outside a change, in `openspec/`:
@@ -124,6 +124,7 @@ Files that sit outside a change, in `openspec/`:
 | File | Holds | Who edits it |
 | --- | --- | --- |
 | `config.yaml` | The schema name, project context and per-artifact rules every assistant follows | The team, rarely |
+| `INDEX.md` | The map for agents: capabilities, Foundry resources (objects, links, actions, functions, automations) and open changes, as pointers. Roughly 300 rows, then it splits per capability. Works with AI FDE only (`docs/index-options.md`) | Propose and Archive, in the change |
 | `glossary.md` | Business terms, their Ontology resources and forbidden synonyms | The team, in the change that adds a term |
 | `ontology-design.md` | Palantir's Ontology design rules and anti-patterns, condensed | The kit maintainer |
 | `ontology.json` | Optional list of API names. Checks match every `Ontology:` name against it | The team, from an Ontology export |
@@ -140,7 +141,7 @@ The model in `ontology.md` and `logic.md` is checked against `openspec/ontology-
 
 No tasks are written, and `apply` does not start, while a row in `open-questions.md` is blocking and open. A row is never deleted. Its status changes to `answered`, `assumed` (the assumption is written down) or `dropped`. Archive asks before closing a change that still has open or assumed rows.
 
-Other Foundry artifacts we considered but did not build (access, app, automation, integration, rollout) are listed in `docs/glossary-and-ontology.md`.
+Other Foundry artifacts we considered but did not build (access, app, integration, rollout) are listed in `docs/glossary-and-ontology.md`.
 
 ## Gherkin scenarios and tasks
 
@@ -194,7 +195,7 @@ Nothing here needs a runner. The rules live in files that an assistant reads and
 | `schemas/foundry-spec-driven/` | Templates and artifact instructions spell out the Foundry, Gherkin and design rules | Claude (CLI or MCP), Continue, anything that reads `openspec instructions` |
 | `config.yaml` | `rules:` repeat them per artifact | Same |
 | `core/aip-skills/` | Explore sketches, Propose writes, Apply acts out each `Verify:` line, Archive checks the scenarios still describe what was built | AI FDE, with no shell |
-| OpenSpec validation (`--strict`, or its TypeScript or Python port) | Checks that each requirement has a scenario with a `WHEN`/`GIVEN` and a `THEN`. The glossary check adds forbidden synonyms, Ontology names and the open-questions gate (a change with `tasks.md` fails while a row is blocking and open). | CI, if you run it |
+| OpenSpec validation (`--strict`, or its TypeScript or Python port) | Checks that each requirement has a scenario with a `WHEN`/`GIVEN` and a `THEN`. The glossary check adds forbidden synonyms, Ontology names, the open-questions gate (a change with `tasks.md` fails while a row is blocking and open) and index drift (a main spec cites an `Ontology:` name with no row in `INDEX.md`). | CI, if you run it |
 
 The limit is plain: validation does not check keyword order, a single `WHEN`, business wording, the `Examples` table, the design review or the quality of an answer. The assistant follows those rules and a reviewer checks them. No Cucumber or Behave runner is shipped. If a team later automates, each spec scenario maps one to one to a `.feature` scenario.
 
@@ -204,14 +205,14 @@ The limit is plain: validation does not check keyword order, a single `WHEN`, bu
 palantir-foundry-openspec/
   core/         copy these: every team, every situation
   addons/       copy what your environment needs
-  docs/         four guides
+  docs/         five guides, and a worked example
   maintainer/   build, test, provenance (in Git, not in the release zip)
   README.md  CHANGELOG.md  VERSION  LICENSE  THIRD_PARTY_NOTICES.md
 ```
 
 | Folder | Use it when | Key contents |
 | --- | --- | --- |
-| `core/project-template/` | Always. It is the spec home a repo starts from | `openspec/` with `config.yaml`, `glossary.md`, `ontology-design.md`, the schema (the only copy), empty `specs/` and `changes/archive/` |
+| `core/project-template/` | Always. It is the spec home a repo starts from | `openspec/` with `config.yaml`, `INDEX.md`, `glossary.md`, `ontology-design.md`, the schema (the only copy), empty `specs/` and `changes/archive/` |
 | `core/aip-skills/` | AI FDE, or any assistant without a shell (situations 1 to 4) | `openspec-explore.md`, `-propose.md`, `-apply.md`, `-archive.md`. No CLI calls. The skills read the config, glossary and design rules from the template |
 | `addons/cli/` | Node 20+ and you want real validation | `openspec-1.16.0/` (bundled CLI), `launchers/` (sh and `.cmd`, telemetry off), `SHA256SUMS`, `PIN.md` (version, hashes, local patches), licence files |
 | `addons/workspace/` | You use Continue or Claude Code | `.continue/` and `.claude/`: the four workflows plus the `openspec-sync-specs` skill, which archive runs. Generated; do not edit |
@@ -222,6 +223,7 @@ palantir-foundry-openspec/
 | `docs/setup.md` | Every situation step by step, the CLI copy-in, what each check covers, what to confirm in Foundry |
 | `docs/ai-fde.md` | AI FDE: Compass folder, skills, Checks, and the review list when no gate runs |
 | `docs/glossary-and-ontology.md` | Concept versus resource, what Palantir's docs say and how the kit uses it, other artifacts considered |
+| `docs/index-options.md` | The index: how it is kept true with no code, the drift ladder, size limit, and the options to improve or replace it |
 | `docs/multi-repo.md` | One spec home for several repositories (stores), satellite config |
 
 ## Maintaining the kit
@@ -274,6 +276,6 @@ One person owns the kit (today: Optivia Labs). Work on a connected machine. The 
 
 - Nothing downloads anything at runtime. Telemetry is off in every launcher and test.
 - No install scripts. No dependencies beyond Node (the bundled CLI) and the Python standard library (the Python check). The TypeScript port needs neither.
-- The artifact order is fixed: proposal, then open questions, specs, design, ontology and data, then logic (after ontology), then tasks, then apply.
+- The artifact order is fixed: proposal, then open questions, specs, design and ontology, then logic (after ontology), then tasks, then apply.
 - No Palantir proprietary content, customer data or credentials.
 - Specs and task checks are written in Gherkin. The assistant follows the rules; validation checks only the basics.

@@ -16,3 +16,5 @@
   - **Verify:** scenario "Carrier reports a delay" passes for the Carrier on the Shipment.
 - [ ] 3.2 Test the refusal
   - **Verify:** scenario "Another Carrier is refused" passes and the Shipment is unchanged.
+- [ ] 3.3 Create the automation `Notify planner of delay`
+  - **Verify:** GIVEN a Shipment; WHEN a Carrier reports the Delay reason Customs; THEN the planners group receives a notification.

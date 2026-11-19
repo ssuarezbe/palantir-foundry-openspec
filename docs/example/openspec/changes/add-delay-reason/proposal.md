@@ -19,4 +19,4 @@ New term: Delay reason (maps to `Shipment` and the action `ReportDelay`).
 
 ## Impact
 
-Object type `Shipment` gains two properties (dataset `shipments_clean` changes with it). New action `ReportDelay`. No change to other Ontology resources. Detail in `ontology.md` and `logic.md`.
+Object type `Shipment` gains two properties (dataset `shipments_clean` changes with it). New action `ReportDelay` and automation `Notify planner of delay`. No change to other Ontology resources. Detail in `ontology.md` and `logic.md`.

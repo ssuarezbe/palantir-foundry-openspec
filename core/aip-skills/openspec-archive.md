@@ -72,6 +72,16 @@ If a check fails, fix the main spec. If you cannot, stop. Do not move the change
 3. If `openspec/changes/archive/<target>/` exists, stop. Ask the user to pick another date or rename the old one.
 4. Move the whole folder `openspec/changes/<name>/` to `openspec/changes/archive/<target>/`. Do not leave a copy.
 
+## Update the index
+
+Open `openspec/INDEX.md`.
+
+1. Delete the change's row under `## In flight`.
+2. Under `## Capabilities`, add or update one row for each capability the change touched: purpose (the first line of its Purpose), its resources, its open changes.
+3. Under `## Resources`, add or update one row for each resource listed in the change's `ontology.md` and `logic.md` with status `new` or `changed`, and each automation: kind, glossary term, the capabilities that cite it in an `Ontology:` line, Last changed (the archive folder name), and the `Implemented in:` value or "Ontology Manager". For a resource the change removed, write `removed <date>` under Last changed. Never delete a row.
+4. API names only. No RIDs, properties or columns.
+5. If Resources has more than 300 rows, tell the user. One file works to roughly 300 rows. After that it splits per capability under `openspec/index/`, with the root as a map.
+
 ## Commit and Checks
 
 1. Commit on the branch with a message like "Archive <name>".

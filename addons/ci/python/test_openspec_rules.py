@@ -318,6 +318,37 @@ class GlossaryRules(unittest.TestCase):
                             bad.append(f"Ontology reference '{n}' in {rel(f)} is not listed in ontology.md or logic.md of the change")
         self.assertEqual(bad, [])
 
+    def test_index_lists_cited_names(self):
+        """Drift: every Ontology: name in a main spec has a row under Resources in openspec/INDEX.md (or openspec/index/*.md)."""
+        main = OS / "INDEX.md"
+        if not main.exists():
+            return
+        files = [main] + sorted((OS / "index").glob("*.md"))
+        indexed, bad = set(), []
+        for f in files:
+            in_table = False
+            for line in f.read_text(encoding="utf8").splitlines():
+                if not line.strip().startswith("|"):
+                    in_table = False
+                    continue
+                cells = [x.strip() for x in line.strip().strip("|").split("|")]
+                if not in_table:
+                    in_table = cells[0].lower().startswith("api name")
+                    continue
+                if all(re.fullmatch(r":?-+:?", x) for x in cells) or cells[0].startswith("Example:"):
+                    continue
+                indexed.update(n.strip() for n in cells[0].replace("`", "").split(",") if n.strip())
+        for f in md_files(OS / "specs"):
+            if f.name != "spec.md":
+                continue
+            text = strip_code(f.read_text(encoding="utf8"), False)
+            for m in re.finditer(r"^\s*Ontology:\s*(.+)$", text, re.M):
+                for raw in m.group(1).split(","):
+                    n = raw.strip().replace("`", "")
+                    if n and not n.startswith("<") and n not in indexed:
+                        bad.append(f"Ontology reference '{n}' in {rel(f)} has no row under Resources in openspec/INDEX.md")
+        self.assertEqual(bad, [])
+
     def test_blocking_open_questions(self):
         """The gate: a change with tasks.md may not have a blocking question that is still open."""
         bad = []

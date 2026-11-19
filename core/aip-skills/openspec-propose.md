@@ -9,7 +9,7 @@ Create one change with all its artifacts: proposal, specs, design, Foundry model
 
 1. Work on a branch of the Code Repository. If you are on main, make a branch first. Never commit to main.
 2. Read `openspec/config.yaml`. Follow its `context:` and `rules:`.
-3. Read `openspec/glossary.md`. Use every term verbatim. Never use a forbidden synonym.
+3. Read `openspec/INDEX.md` (the map), then `openspec/glossary.md`. Use every term verbatim. Never use a forbidden synonym.
 4. Read the folders in `openspec/specs/` that relate to the idea. Read them in full.
 5. Read `openspec/ontology-design.md`. Apply it to `ontology.md` and `logic.md`. Reject its anti-patterns.
 6. Confirm every Ontology object type and action type the change touches exists. Use the Ontology tools you have, `openspec/ontology.json` if present, or ask the user. Stop on any name you cannot confirm.
@@ -109,7 +109,7 @@ Skip the file only for a small change with no technical choices. Tell the user i
 Each file has tables with one row per resource, with the template's headers kept exactly (the checks read them). Properties, parameters, inputs and outputs go in a bullet block under the table, one per new or changed resource. Use API names exactly. Status is `new`, `changed` or `read` (a `read` row is the name only; never redefine an existing type). Write "None" under a heading with nothing to record. Both files must exist. When a file has nothing to record at all, it holds only "None" and one line saying why.
 
 - `ontology.md`: a glossary term (business concept) can map to several object types and link types, and one object type can serve several terms. Give the term on every row; the glossary row lists all its resources. `## Scope` (Ontology, private or shared, Marketplace, owner), `## Object types` (API name, display name, term, status, primary key, backing dataset; then a bullet block per type: description, properties with types and units), `## Link types` (from, to, cardinality, stored as: a foreign key property, or a join dataset for many-to-many), `## Questions this model must answer` (situation, factors, impact; each cited by a scenario), `## Interfaces and shared properties`, `## Value types` (or "None"), `## Backing data` (every dataset behind a new or changed type: kind, source, cadence, owner; columns in a bullet line each; the transforms that produce it; one data quality check each; no credentials or customer data), `## Design review` (each rule broken, the reason, when to revisit; or "No deviations"), `## Access` (markings, restricted views, row and column rules, roles; who is covered, including AI agents; or "Unchanged"). Use API names, never RIDs.
-- `logic.md`: `## Actions` (term, edits, rules, status; then per action: parameters, who may run it and what must be true, side effects), `## Functions` (kind, reads, edits per object type, the function-backed action that uses it, status; then per function: language, inputs, output), `## Writeback to other systems` (target, mechanism, behavior when down, or "None"), `## AIP Logic and agents` (tools, human review before write, evaluation cases that cite spec scenarios; then input and output). AIP Logic that writes to the Ontology goes through an action.
+- `logic.md`: `## Actions` (term, edits, rules, status; then per action: parameters, who may run it and what must be true, side effects), `## Automations` (name, trigger, condition, effect; an automation that changes the Ontology applies an action; or "None"), `## Functions` (kind, reads, edits per object type, the function-backed action that uses it, status; then per function: language, inputs, output), `## Writeback to other systems` (target, mechanism, behavior when down, or "None"), `## AIP Logic and agents` (tools, human review before write, evaluation cases that cite spec scenarios; then input and output). AIP Logic that writes to the Ontology goes through an action.
 - Every `Ontology:` name in a spec is an existing resource or is listed in `ontology.md` or `logic.md`.
 
 ## open-questions.md
@@ -129,6 +129,10 @@ A table: `ID | Stage | Question | Blocking | Affects | Owner | Status | Answer`.
 - Order by dependency: datasets and transforms, object and link types, actions, functions, AIP Logic, then apps. Every new or changed resource in `ontology.md` and `logic.md` has a task.
 - Put each group's tests and docs in that group.
 - Add a task to update `openspec/glossary.md` when the proposal lists glossary changes.
+
+## openspec/INDEX.md
+
+Add one row under `## In flight`: the change, its capabilities, the resources it touches (API names only, no RIDs, no properties) and the count of blocking open rows. Keep its rows true as the change grows. One file works to roughly 300 rows. After that it splits per capability, with the root as a map.
 
 ## Finish
 

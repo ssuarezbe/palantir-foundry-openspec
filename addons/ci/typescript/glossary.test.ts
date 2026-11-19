@@ -206,6 +206,44 @@ const rows = satellite ? [] : parseGlossary();
     expect(bad).toEqual([]);
   });
 
+  // Drift: every Ontology: name in a main spec has a row under Resources in openspec/INDEX.md (or openspec/index/*.md).
+  it("lists every Ontology name cited by a main spec in INDEX.md", () => {
+    const main = path.join(root, "openspec", "INDEX.md");
+    if (!fs.existsSync(main)) return;
+    const files = [main];
+    const split = path.join(root, "openspec", "index");
+    if (fs.existsSync(split)) for (const f of fs.readdirSync(split)) if (f.endsWith(".md")) files.push(path.join(split, f));
+    const indexed = new Set<string>();
+    for (const f of files) {
+      let inTable = false;
+      for (const line of fs.readFileSync(f, "utf8").split(/\r?\n/)) {
+        if (!line.trim().startsWith("|")) { inTable = false; continue; }
+        const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+        if (!inTable) { inTable = /^api name/i.test(cells[0]); continue; }
+        if (cells.every((c) => /^:?-+:?$/.test(c)) || cells[0].startsWith("Example:")) continue;
+        cells[0].replace(/`/g, "").split(",").map((s) => s.trim()).filter(Boolean).forEach((n) => indexed.add(n));
+      }
+    }
+    const bad: string[] = [];
+    const walk = (d: string) => {
+      if (!fs.existsSync(d)) return;
+      for (const s of fs.readdirSync(d, { withFileTypes: true })) {
+        const p = path.join(d, s.name);
+        if (s.isDirectory()) walk(p);
+        else if (s.name === "spec.md") {
+          for (const m of stripCode(fs.readFileSync(p, "utf8"), false).matchAll(/^\s*Ontology:\s*(.+)$/gm)) {
+            for (const raw of m[1].split(",")) {
+              const n = raw.trim().replace(/`/g, "");
+              if (n && !n.startsWith("<") && !indexed.has(n)) bad.push(`Ontology reference '${n}' in ${rel(p)} has no row under Resources in openspec/INDEX.md`);
+            }
+          }
+        }
+      }
+    };
+    walk(path.join(root, "openspec", "specs"));
+    expect(bad).toEqual([]);
+  });
+
   // The gate: a change with tasks.md may not have a blocking question that is still open.
   it("has no blocking open question in a change that already has tasks", () => {
     const bad: string[] = [];

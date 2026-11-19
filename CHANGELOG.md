@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.0-foundry.7 - 2026-11-18
+
+The bundle and the artifact graph did not change.
+
+- `openspec/INDEX.md`: one map for agents (capabilities, Foundry resources, open changes), kept by the skills with no code so it works with AI FDE only. Propose adds an In flight row, Archive updates Capabilities and Resources, Explore starts at it and has an "Audit the index" section (list and compare, report first, set `Last audited:`). It carries the size rule: one file works to roughly 300 rows, then it splits per capability under `openspec/index/` with the root as a map. Rule also in `config.yaml`, Propose and Archive.
+- Drift check in `glossary.test.ts` and `test_openspec_rules.py`: a main spec cites an `Ontology:` name with no row under Resources in `INDEX.md` (or `openspec/index/*.md`). Fixtures `invalid/index-missing-row`, `valid/index-complete`. Skipped when there is no `INDEX.md`.
+- `logic.md` gains Automations (name, trigger, condition, effect). The example change has one.
+- `docs/index-options.md`: why it works with no shell, the drift ladder (skills, review rule, audit, date stamp, check, optional generator), the size limit, and the options to improve or replace it. `docs/ai-fde.md` review list item 9.
+- Fixed: `run-all.sh` passed if only one of `PIN.md` and `README.md` held the version, and the README still said foundry.5.
+
 ## 1.16.0-foundry.6 - 2026-11-15
 
 Schema `foundry-spec-driven` version 3. The bundle did not change (same SHA-256).

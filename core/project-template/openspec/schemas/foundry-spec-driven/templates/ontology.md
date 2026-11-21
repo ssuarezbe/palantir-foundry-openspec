@@ -14,9 +14,10 @@
 | --- | --- | --- | --- | --- | --- |
 | `<ObjectTypeApiName>` | <name users see> | `<term>` | new / changed / read | `<property>` (String) | `<dataset name>` |
 
-<!-- One block per new or changed object type. Mark derived or denormalized properties and give the source of truth. -->
+<!-- One block per new or changed object type. Mark derived or denormalized properties and give the source of truth. Classification: a class from the rulebook's classification map, per property where it differs. -->
 
 - `<ObjectTypeApiName>`: <one-sentence description>
+  - classification: `<class>`
   - `<apiName>`: <type>, <unit>
   - `<apiName>`: <type> (derived from `<source>`)
 
@@ -61,6 +62,7 @@
 <!-- Columns of each new or changed dataset, one line each. -->
 
 - `<dataset name>`: `<column>: <type>`, `<column>: <type>`
+  - classification: `<class>`
 
 Transforms and pipelines:
 
@@ -76,7 +78,7 @@ Data quality:
 
 ## Access
 
-<!-- Markings, restricted views, row-level and column-level rules, roles. Say who is covered: users, groups and AI agents (agents inherit permissions from the user or project). Never duplicate an object type for security. Write "None" or "Unchanged". -->
+<!-- Derive it from the rulebook: the classification map for each classification above and the scope map for each name. Cite the rule IDs. Markings, restricted views, row-level and column-level rules, roles. Say who is covered: users, groups and AI agents (agents inherit permissions from the user or project). Never duplicate an object type for security. Write "None" or "Unchanged". -->
 
 ## Design review
 

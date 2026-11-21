@@ -18,6 +18,8 @@ artifacts:
       - **Glossary changes**: New or changed domain terms. Check `openspec/glossary.md` first and use its terms verbatim. Add every new domain noun to the glossary in this same change. A term is a business concept: give the Ontology resources (object types, link types, action types) that represent it, one or several, or "not modelled". Write "None" if there are no changes.
       - **Impact**: Affected code, APIs, dependencies, or systems. Name the Foundry resources touched (object types, actions, datasets) once here; the detail lives in `ontology.md` and `logic.md`.
 
+      Read `openspec/rulebook/README.md` (company rules). A rule that needs an approval or a decision before the work (for example publishing PII) becomes a blocking row in `open-questions.md` now.
+
       Also create `open-questions.md` now (see that artifact). Record every gap you could not close while writing the proposal.
 
       IMPORTANT: The Capabilities section is critical. It creates the contract between
@@ -200,6 +202,7 @@ artifacts:
       - **Context**: Only the current state and constraints needed to explain the approach. Reference the proposal for motivation instead of restating it (e.g., "See proposal.md - Why").
       - **Goals / Non-Goals**: What this design achieves and explicitly excludes. Don't restate the proposal's scope - add only design-level boundaries.
       - **Decisions**: Key technical choices with rationale (why X over Y?). Include alternatives considered for each decision.
+      - **Rulebook review**: First read `openspec/rulebook/README.md`, then only the owner files and sections whose `Applies to` fits this change. Skip rows that start with `Example:`. Write one row per rule that applies: the rule ID, the result (`complies`, `deviates` or `open`), where in this change it is satisfied, and the reason or the open question for a deviation or an open row. Write "No rulebook" if the rulebook holds only examples. Precedence is in the rulebook README. A deviation from a `must` rule needs an answered open question.
       - **Risks / Trade-offs**: Known limitations, things that could go wrong. Format: [Risk] → Mitigation
       - **Migration Plan**: Steps to deploy, rollback strategy (if applicable)
 
@@ -240,6 +243,8 @@ artifacts:
       - Choose the primary key type with care: String, Integer or Short are preferred. Mark derived and denormalized properties and give the source of truth.
       - Questions this model must answer: list the business questions, each as situation, contributing factors, impact, with the object and link types used. Write at least one spec scenario for each. A manual export or join that people rely on today usually means a missing link.
       - Backing data: every dataset, virtual table or model behind a new or changed object type or link: name, kind, status, source system or upstream dataset, update cadence, owner in the table; columns with types in a bullet line per dataset under it. Then the transforms that produce them (tool, inputs, outputs, trigger) and one data quality check per row with its threshold in words. No credentials, connection strings or customer data: name sources by system.
+      - Classification: give every new or changed object type and dataset a `classification:` line naming a class from `openspec/rulebook/security.md` (per property where it differs). Derive Access from the classification map and the scope map, and cite the rule IDs. Never invent a class.
+      - Naming and storage: names follow the naming rules in the rulebook and datasets follow its storage map. Cite the rule ID where a rule shaped a choice.
       - Access: markings, restricted views, row-level and column-level rules, roles. Say who is covered: users, groups and AI agents (agents inherit permissions from the user or project). Write "Unchanged" if none.
       - Write "None" under a heading with nothing to record. If the change touches no Ontology resource, every heading says "None".
       - Add a row to `open-questions.md` (stage `ontology`) for every name, key, type, rule, source or cadence you could not confirm.
@@ -259,6 +264,7 @@ artifacts:
 
       - Actions: in the table, API name, glossary term, the object and link types it edits (they must be in `ontology.md` or exist), the rules it uses (create, modify, delete, link, function) and status (`new`, `changed`, `read`). In a bullet block under the table, one per new or changed action: parameters, submission criteria in words (who may run it and what must be true), side effects (notification, webhook, schedule). Rules compile into one edit per object, so order matters. A function rule cannot be combined with other rules. Link rules work for many-to-many links only: change a one-to-many link through its foreign key property. Byte, float and short properties cannot be action parameters.
       - Functions: in the table, API name, kind (business rule, model, LLM-driven or orchestration), what it reads, the edits it returns (create, update, delete, link) per object type, who uses it, status. In a bullet block under the table: language (TypeScript or Python), inputs, output. A function that edits changes nothing by itself: it takes effect only through a function-backed action, so name that action. Automate does not apply edits returned by a function: use an action. Object set queries inside the function read values from before its edits.
+      - Who may run an action comes from the rulebook (classification map, scope map, access rules): name the group and cite the rule ID.
       - Automations: name, trigger (time, object set change or threshold), condition in words, effect (an action, a notification or a function) and status. An automation that must change the Ontology applies an action: Automate does not apply the edits a function returns. Write "None" if unused.
       - Writeback: for every change that must reach a system outside Foundry, name the action or function, the target system, the mechanism (webhook, change data capture or other) and what happens when the target is down. Write "None" if the Ontology is the only record.
       - AIP Logic and agents: in the table, name, the tools it may call (functions, actions, Ontology queries), whether a human reviews before it writes, and its evaluation cases; input and output in a bullet block under the table. Cite spec scenarios as evaluation cases, for example `scenario "<name>" of <capability>`. An AIP Logic function that writes to the Ontology must go through an action.

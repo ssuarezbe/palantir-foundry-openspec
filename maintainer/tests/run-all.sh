@@ -152,7 +152,7 @@ fi
 
 echo "== 11. worked example (docs/example)"
 X=$WORK/example; mkdir -p "$X" && cp -R "$ROOT/core/project-template/openspec" "$X/openspec"
-cp "$ROOT/docs/example/openspec/glossary.md" "$ROOT/docs/example/openspec/INDEX.md" "$X/openspec/" && cp -R "$ROOT/docs/example/openspec/changes/." "$X/openspec/changes/"
+cp "$ROOT/docs/example/openspec/glossary.md" "$ROOT/docs/example/openspec/INDEX.md" "$X/openspec/" && cp -R "$ROOT/docs/example/openspec/rulebook" "$X/openspec/rulebook" && cp -R "$ROOT/docs/example/openspec/changes/." "$X/openspec/changes/"
 (cd "$X" && node "$CLI" validate --all --strict --no-interactive >"$WORK/o" 2>&1) && ok || bad "docs/example does not validate: $(cat "$WORK/o")"
 (cd "$X" && node "$CLI" status --change add-delay-reason >"$WORK/o" 2>&1); grep -q "7/7 artifacts complete" "$WORK/o" && ok || bad "docs/example is missing an artifact: $(cat "$WORK/o")"
 (cd "$X" && OPENSPEC_ROOT=$X python3 -I "$ROOT/addons/ci/python/test_openspec_rules.py" >"$WORK/p" 2>&1) && ok || bad "docs/example fails the Python check: $(cat "$WORK/p")"
@@ -164,6 +164,13 @@ for f in "$ROOT/core/project-template/openspec/INDEX.md" "$ROOT/core/project-tem
   grep -q "roughly 300 rows" "$f" && grep -q "splits per capability" "$f" && ok || bad "$f lacks the 300-row ceiling rule"
 done
 [ -f "$WORK/drop-in/situation-1/openspec/INDEX.md" ] && ok || bad "drop-in situation-1 has no INDEX.md"
+
+echo "== 13. rulebook"
+for f in README governance security infrastructure; do [ -f "$ROOT/core/project-template/openspec/rulebook/$f.md" ] && ok || bad "rulebook/$f.md is missing from the template"; done
+for f in openspec-explore openspec-propose openspec-apply openspec-archive; do grep -q "rulebook" "$ROOT/core/aip-skills/$f.md" && ok || bad "$f.md does not mention the rulebook"; done
+grep -q "## Rulebook review" "$ROOT/core/project-template/openspec/schemas/foundry-spec-driven/templates/design.md" && ok || bad "design.md template has no Rulebook review"
+# The template's rows are all examples: a fresh project must not trip the Rulebook review check (section 3 and 9 cover it); no real row may ship.
+if grep -hE '^\| (GOV|SEC|INF)-' "$ROOT"/core/project-template/openspec/rulebook/*.md >/dev/null 2>&1; then bad "template rulebook ships a non-example row"; else ok; fi
 
 echo "== 5. aip-skills"
 if grep -rnE '(^|[^A-Za-z/_.-])openspec[[:space:]]+[-a-z]' "$ROOT/core/aip-skills" >"$WORK/o"; then bad "CLI calls in aip-skills:"$'\n'"$(cat "$WORK/o")"; else ok; fi

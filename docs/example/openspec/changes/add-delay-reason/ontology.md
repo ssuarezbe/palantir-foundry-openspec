@@ -13,6 +13,7 @@
 | `Shipment` | Shipment | `Shipment`, `Delay reason` | changed | `shipmentId` (String) | `shipments_clean` |
 
 - `Shipment`: A load of goods moving between two sites.
+  - classification: `internal`
   - `delayReason`: String, one of the allowed reasons (new)
   - `delayReportedAt`: Timestamp, UTC (new)
 
@@ -43,6 +44,7 @@ None
 | `shipments_clean` | dataset | changed | `shipments_raw` | hourly | Logistics team |
 
 - `shipments_clean`: `delayReason: String`, `delayReportedAt: Timestamp` (both new, empty for existing rows)
+  - classification: `internal`
 
 Transforms and pipelines: None (the action writes the properties; the existing pipeline carries them through).
 
@@ -54,7 +56,7 @@ Data quality:
 
 ## Access
 
-Carrier users see only Shipments linked to their own Carrier (restricted view, unchanged). Planners see all. AI agents inherit the permissions of the user who runs them.
+Derived from `SEC-C1` (internal): the `LOGI-Internal` marking; all employees read, the Logistics team acts. Carrier users see only Shipments linked to their own Carrier (restricted view, unchanged). Planners see all. AI agents inherit the permissions of the user who runs them.
 
 ## Design review
 

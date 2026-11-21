@@ -22,6 +22,15 @@ Shipments already exist in the Ontology. Staff read them in an operations view. 
 
 A second report overwrites the first. Accepted until Q2 or a history need appears.
 
+## Rulebook review
+
+| Rule | Result (complies, deviates, open) | Where | Reason or question |
+| --- | --- | --- | --- |
+| `GOV-001` | complies | `ontology.md` Object types `Shipment` | |
+| `GOV-002` | complies | `logic.md` Actions `ReportDelay` | |
+| `SEC-C1` | complies | `ontology.md` Access: the Logistics marking and groups | |
+| `SEC-002` | complies | `logic.md` Actions `ReportDelay`: planners and the Carrier on the Shipment | |
+
 ## Migration Plan
 
 None. The properties start empty; nothing is backfilled.

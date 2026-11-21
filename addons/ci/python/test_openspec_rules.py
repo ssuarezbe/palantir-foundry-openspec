@@ -349,6 +349,64 @@ class GlossaryRules(unittest.TestCase):
                         bad.append(f"Ontology reference '{n}' in {rel(f)} has no row under Resources in openspec/INDEX.md")
         self.assertEqual(bad, [])
 
+    def test_rulebook_review(self):
+        """Once openspec/rulebook/ holds real rules, a change with tasks.md records each applicable rule in design.md."""
+        ids = set()
+        for f in sorted((OS / "rulebook").glob("*.md")):
+            if f.name == "README.md":
+                continue
+            in_table = False
+            for line in f.read_text(encoding="utf8").splitlines():
+                if not line.strip().startswith("|"):
+                    in_table = False
+                    continue
+                cells = [x.strip() for x in line.strip().strip("|").split("|")]
+                if not in_table:
+                    in_table = cells[0].lower() == "id"
+                    continue
+                if all(re.fullmatch(r":?-+:?", x) for x in cells) or cells[0].startswith("Example:"):
+                    continue
+                ids.add(cells[0].replace("`", ""))
+        if not ids:
+            return
+        bad = []
+        for c in open_changes():
+            design = c / "design.md"
+            if not (c / "tasks.md").exists() or not design.exists():
+                continue
+            lines = design.read_text(encoding="utf8").splitlines()
+            start = next((i for i, l in enumerate(lines) if l.strip() == "## Rulebook review"), None)
+            if start is None:
+                bad.append(f"{rel(design)}: has no '## Rulebook review', but openspec/rulebook/ has rules")
+                continue
+            end = next((i for i, l in enumerate(lines) if i > start and l.startswith("## ")), len(lines))
+            rows, in_table = 0, False
+            for line in lines[start + 1:end]:
+                if not line.strip().startswith("|"):
+                    in_table = False
+                    continue
+                cells = [x.strip() for x in line.strip().strip("|").split("|")]
+                if not in_table:
+                    in_table = cells[0].lower() == "rule"
+                    continue
+                if all(re.fullmatch(r":?-+:?", x) for x in cells):
+                    continue
+                rid = cells[0].replace("`", "")
+                if rid.startswith("<"):
+                    continue
+                rows += 1
+                cells += [""] * (4 - len(cells))
+                result = cells[1].lower()
+                if rid not in ids:
+                    bad.append(f"rule '{rid}' in {rel(design)} is not in openspec/rulebook/")
+                if result not in ("complies", "deviates", "open"):
+                    bad.append(f"rule '{rid}' in {rel(design)} has result '{cells[1]}' (use complies, deviates or open)")
+                elif result != "complies" and not cells[3]:
+                    bad.append(f"rule '{rid}' in {rel(design)} is '{result}' and needs a reason or an open question")
+            if rows == 0:
+                bad.append(f"{rel(design)}: '## Rulebook review' has no rule rows, but openspec/rulebook/ has rules")
+        self.assertEqual(bad, [])
+
     def test_blocking_open_questions(self):
         """The gate: a change with tasks.md may not have a blocking question that is still open."""
         bad = []

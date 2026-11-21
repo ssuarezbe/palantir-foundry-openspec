@@ -11,7 +11,7 @@ In the release zip, `drop-in/situation-N/` holds the files for each row below, l
 | # | Your situation | Copy | Checked automatically | Checked only by a person |
 | --- | --- | --- | --- | --- |
 | 1 | **AI FDE only. Checks run no tests.** No shell, no Node | `core/` | Nothing about the specs | Everything. Use the review list in `docs/ai-fde.md` |
-| 2 | **TypeScript functions repository. Jest runs in Checks and can start a child process** | `core/`, `addons/cli/`, `openspec.test.ts`, `glossary.test.ts` | Full OpenSpec validation (strict), forbidden synonyms, empty definitions, Ontology names | Gherkin style, design review, the index (audit and review rule: `docs/index-options.md`) |
+| 2 | **TypeScript functions repository. Jest runs in Checks and can start a child process** | `core/`, `addons/cli/`, `openspec.test.ts`, `glossary.test.ts` | Full OpenSpec validation (strict), forbidden synonyms, empty definitions, Ontology names | Gherkin style, design review, whether each rulebook row is right (`docs/rulebook.md`), the index (audit and review rule: `docs/index-options.md`) |
 | 3 | **TypeScript repository. Jest runs, but no child process, or the Node version in Checks is old or unknown** | `core/`, `openspec-rules.test.ts`, `glossary.test.ts` (no CLI) | The TypeScript port of the OpenSpec rules, forbidden synonyms, empty definitions, Ontology names | The same, plus the OpenSpec warnings the port does not cover (for example a proposal Why under 50 characters or a requirement over 500) |
 | 4 | **Python repository or Python checks. No Node** | `core/`, `test_openspec_rules.py` | Same as 3, in Python | Same as 3 |
 | 5 | **Laptop or Foundry VS Code workspace with Node 20+** | `core/`, `addons/cli/`, `addons/workspace/` | Whatever you run: `validate --strict` before each commit | The same as 2 |
@@ -126,12 +126,13 @@ Put the gate only in the spec home (`docs/multi-repo.md`). Other repositories de
 | Blocking open question with `tasks.md` | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
 | Resource tagged with a glossary term is on that term's glossary row; `Ontology:` name is in the change's `ontology.md` or `logic.md` | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
 | A main spec cites an `Ontology:` name with no row under Resources in `INDEX.md` | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
+| Once `openspec/rulebook/` has real rows: a change with tasks has `## Rulebook review` in `design.md`, cites only rules that exist, with a valid result and a reason for a deviation | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
 | Forbidden synonym, empty definition, unmapped Ontology name | no, `glossary.test.ts` adds it | no, `glossary.test.ts` adds it | yes, in the same file |
 
 No check covers keyword order, a single `WHEN`, business wording, the design review or the quality of an open-question answer.
 The open-questions gate is in `glossary.test.ts` (and the Python file): a change that has `tasks.md` fails while `open-questions.md` has a row with Blocking `yes` and Status `open`. It runs in situations 2 to 4, not in the bare CLI.
 Code spans and fenced code are ignored by the synonym check, and so are `Ontology:` and `Implemented in:` lines. Rows whose term starts with `Example:` are skipped. Archived changes are not scanned.
-The source repository tests the CLI, the TypeScript port and the Python port against 27 fixtures and requires the three to agree (`maintainer/tests/fixtures/`, not in the release zip).
+The source repository tests the CLI, the TypeScript port and the Python port against 30 fixtures and requires the three to agree (`maintainer/tests/fixtures/`, not in the release zip).
 
 ## 6. What to confirm in Foundry
 

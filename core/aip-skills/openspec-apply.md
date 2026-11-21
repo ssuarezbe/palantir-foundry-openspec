@@ -36,7 +36,7 @@ Rules:
 - Touch only what the task needs.
 - Where an Ontology resource is involved, use the API name from the spec's `Ontology:` line, `ontology.md` or `logic.md`. Confirm it exists before you code against it.
 - Build the resources as `ontology.md` and `logic.md` describe them. If the work needs a different name, type, parameter or dataset, stop and fix that file first.
-- Before you build an object type, link type or action, read `openspec/ontology-design.md`. If the work needs a design rule broken, add it to the "Design review" table in `ontology.md` first.
+- Follow the rules in `design.md` under Rulebook review. If the work needs a rulebook rule broken, add it there first and ask the user. Before you build an object type, link type or action, read `openspec/ontology-design.md`. If the work needs a design rule broken, add it to the "Design review" table in `ontology.md` first.
 - Add a row to `open-questions.md` (stage `apply`) for every new gap. If it is blocking, stop and ask.
 - If the work shows the spec or design is wrong, stop. Say what is wrong. Offer to fix the artifact first. Do not silently change the specs.
 - If a task is unclear, a decision is missing, or an error blocks you, stop. Say which task and why. Ask the user. Do not guess.

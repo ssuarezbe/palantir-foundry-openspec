@@ -7,6 +7,7 @@ context: |
   Refer to Ontology object types, link types and action types by API name. Do not redefine them in specs.
   The data model lives in ontology.md, behavior (actions, functions, AIP Logic) in logic.md, datasets and transforms under Backing data in ontology.md.
   Start at openspec/INDEX.md: it maps capabilities, Foundry resources (objects, links, actions, functions, automations) and open changes. Keep it true: Propose adds an In flight row, Archive moves it into Capabilities and Resources. One file works to roughly 300 rows. After that it splits per capability, with the root as a map.
+  Company rules live in openspec/rulebook/ (naming, scope, storage, data classification, decision guides, process), one file per owning team. Read its README, then only the rows that apply. Each change records them in design.md under Rulebook review. Precedence: security, governance, infrastructure, then ontology-design.md. A rulebook row that starts with Example: is a sample: ignore it.
   Read openspec/ontology-design.md before you write or review ontology.md or logic.md. It holds the Ontology design rules and anti-patterns.
   Record every knowledge gap as a row in open-questions.md. Never guess. Never write tasks while a blocking question is open.
   Write all artifacts in plain, short, imperative English.
@@ -24,12 +25,14 @@ rules:
     - 'Write every scenario in Gherkin form: bold GIVEN, WHEN, THEN lines, with AND or BUT to continue a step. One behavior per scenario, exactly one WHEN, business language, no UI or code detail. Same steps with different data: use <placeholder> and an Examples table.'
     - 'When several repositories or Foundry resources implement a requirement, add one line under the requirement text: "Implemented in: <ontology action, function, app>".'
   design:
+    - Fill "Rulebook review": one row per applicable rule in openspec/rulebook/ with the rule ID, result (complies, deviates, open), where it is satisfied and the reason. Write "No rulebook" if it holds only examples.
     - Put unknowns in open-questions.md, not in design.md.
   ontology:
     - List object types, link types and access rules by exact API name with status new, changed or read. Do not redefine existing types.
     - A glossary term can map to several object types and link types. Give the term on every row, and keep the glossary row listing all of them.
     - Check the model against openspec/ontology-design.md and fill "Design review" with every rule broken, the reason and when to revisit it, or "No deviations". Reject the anti-patterns in that file.
     - Use API names, not RIDs. Give each object type a display name and description. Give properties a unit. A many-to-many link needs a join dataset listed under Backing data. List the questions the model must answer, each cited by a spec scenario.
+    - Every new or changed object type and dataset has a classification: line from the rulebook's classification map, and Access is derived from the classification and scope maps, citing rule IDs.
     - Every new or changed object type names its primary key and its backing dataset, and that dataset appears under Backing data with its source, columns, cadence, owner and a data quality check. No credentials or customer data.
     - If the change touches no Ontology resource and no dataset, the file says "None" and why. Same for logic.md.
     - Keep the template table headers. Properties, parameters, inputs and outputs go in bullet blocks under the tables, not in extra columns.

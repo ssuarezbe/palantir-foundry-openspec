@@ -18,8 +18,9 @@ Finish a change. Merge its delta specs into the main specs, then move the change
    - If any are open, list them. Ask: "Archive anyway?" Continue only on a clear yes.
 5. Read `open-questions.md`. List every row that is still `open` or `assumed`. Ask: "Archive with these open?" Continue only on a clear yes, and say they stay in the archived folder. Stop if a blocking row is open.
 6. Read `ontology.md` and `logic.md`. Ask: "Do these still match what was built?" Check the "Design review" table: every deviation still true, no new anti-pattern. If not, fix them first.
-7. Read the scenarios in the delta specs. Ask: "Do these still describe what was built?" If the work changed the behavior, stop. Fix the delta first (back to the OpenSpec Propose skill), then archive.
-8. Read `openspec/glossary.md`. If the proposal's Glossary changes list terms, confirm each is in the glossary. If not, stop and ask the user to add them in this change.
+7. Read `design.md` under Rulebook review (the rulebook rules the change cited). Ask: "Does every row still match what was built?" Fix a row that does not before you archive.
+8. Read the scenarios in the delta specs. Ask: "Do these still describe what was built?" If the work changed the behavior, stop. Fix the delta first (back to the OpenSpec Propose skill), then archive.
+9. Read `openspec/glossary.md`. If the proposal's Glossary changes list terms, confirm each is in the glossary. If not, stop and ask the user to add them in this change.
 
 ## Confirm the work has merged
 

@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.16.0-foundry.8 - 2026-11-21
+
+The bundle and the artifact graph did not change.
+
+- `openspec/rulebook/`: the company's rules, one file per owning team (`governance.md`, `security.md`, `infrastructure.md`, with ID prefixes) and a README (files, precedence, classes, how to read and keep it). Four kinds of row: rules, decision guides, a classification map and maps (scope by name, storage). The template holds invented `Example:` rows only.
+- `design.md` gains `## Rulebook review` (rule ID, result, where, reason). `ontology.md` gains a `classification:` line per object type and dataset, and Access is derived from the classification and scope maps. A rule that needs approval becomes a blocking open question. Schema instructions, `config.yaml` rules and precedence, the four skills and the index read order follow.
+- Checks (`glossary.test.ts`, `test_openspec_rules.py`): once the rulebook has real rows, a change with tasks must have a Rulebook review that cites existing rules with a valid result and a reason for a deviation. Fixtures `valid/rulebook-review`, `invalid/rulebook-review-missing`, `invalid/rulebook-unknown-rule`. The worked example carries a small rulebook.
+- `docs/rulebook.md`: structure, how a change uses it, how to fill it (option A: owners publish rows; option B: your team digests), a table for customizing it to a company or project, other options (references, skill, ODRL, generator).
+
+
 ## 1.16.0-foundry.7 - 2026-11-18
 
 The bundle and the artifact graph did not change.

@@ -244,6 +244,58 @@ const rows = satellite ? [] : parseGlossary();
     expect(bad).toEqual([]);
   });
 
+  // Rulebook: once openspec/rulebook/ holds real rules, a change with tasks.md records each applicable rule in design.md.
+  function rulebookIds(): Set<string> {
+    const ids = new Set<string>();
+    const dir = path.join(root, "openspec", "rulebook");
+    if (!fs.existsSync(dir)) return ids;
+    for (const f of fs.readdirSync(dir)) {
+      if (!f.endsWith(".md") || f === "README.md") continue;
+      let inTable = false;
+      for (const line of fs.readFileSync(path.join(dir, f), "utf8").split(/\r?\n/)) {
+        if (!line.trim().startsWith("|")) { inTable = false; continue; }
+        const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+        if (!inTable) { inTable = cells[0].toLowerCase() === "id"; continue; }
+        if (cells.every((c) => /^:?-+:?$/.test(c)) || cells[0].startsWith("Example:")) continue;
+        ids.add(cells[0].replace(/`/g, ""));
+      }
+    }
+    return ids;
+  }
+
+  it("records each applicable rulebook rule in design.md", () => {
+    const ids = rulebookIds();
+    const changes = path.join(root, "openspec", "changes");
+    if (ids.size === 0 || !fs.existsSync(changes)) return;
+    const bad: string[] = [];
+    for (const e of fs.readdirSync(changes, { withFileTypes: true })) {
+      const dir = path.join(changes, e.name);
+      const design = path.join(dir, "design.md");
+      if (!e.isDirectory() || e.name === "archive" || !fs.existsSync(path.join(dir, "tasks.md")) || !fs.existsSync(design)) continue;
+      const lines = fs.readFileSync(design, "utf8").split(/\r?\n/);
+      const start = lines.findIndex((l) => l.trim() === "## Rulebook review");
+      if (start < 0) { bad.push(`${rel(design)}: has no '## Rulebook review', but openspec/rulebook/ has rules`); continue; }
+      let end = lines.findIndex((l, i) => i > start && /^## /.test(l));
+      if (end < 0) end = lines.length;
+      let rows = 0, inTable = false;
+      for (const line of lines.slice(start + 1, end)) {
+        if (!line.trim().startsWith("|")) { inTable = false; continue; }
+        const cells = line.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+        if (!inTable) { inTable = cells[0].toLowerCase() === "rule"; continue; }
+        if (cells.every((c) => /^:?-+:?$/.test(c))) continue;
+        const id = cells[0].replace(/`/g, "");
+        if (id.startsWith("<")) continue;
+        rows++;
+        const result = (cells[1] || "").toLowerCase();
+        if (!ids.has(id)) bad.push(`rule '${id}' in ${rel(design)} is not in openspec/rulebook/`);
+        if (!["complies", "deviates", "open"].includes(result)) bad.push(`rule '${id}' in ${rel(design)} has result '${cells[1] || ""}' (use complies, deviates or open)`);
+        else if (result !== "complies" && !(cells[3] || "").trim()) bad.push(`rule '${id}' in ${rel(design)} is '${result}' and needs a reason or an open question`);
+      }
+      if (rows === 0) bad.push(`${rel(design)}: '## Rulebook review' has no rule rows, but openspec/rulebook/ has rules`);
+    }
+    expect(bad).toEqual([]);
+  });
+
   // The gate: a change with tasks.md may not have a blocking question that is still open.
   it("has no blocking open question in a change that already has tasks", () => {
     const bad: string[] = [];

@@ -7,7 +7,7 @@ Last audited: never. The Explore skill's "Audit the index" section sets the date
 Read in this order:
 
 1. This file: find the capability or resource.
-2. `openspec/glossary.md`: the business term and the resources that represent it.
+2. `openspec/glossary.md`: the business term and the resources that represent it. For rules (naming, scope, storage, classification), `openspec/rulebook/README.md`.
 3. `openspec/specs/<capability>/spec.md`: the behavior.
 4. The change in `openspec/changes/<name>/` (open) or `openspec/changes/archive/<date>-<name>/` (done): the model, the logic and the open questions.
 5. The Ontology tools: confirm every API name before you use it.

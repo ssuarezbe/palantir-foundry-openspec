@@ -22,20 +22,23 @@ Not tested here: everything in this guide. The menu names below follow the build
 
 ## Where Markdown lives
 
-Foundry's Compass overview and Notepad overview do not say Markdown is supported, and we are told Compass does not preview or edit Markdown out of the box. Not confirmed in the docs: check your enrollment. Two places hold `openspec/`:
+`openspec/` goes in a Code Repository. Compass holds only the saved skills.
+
+- **Why not a Compass folder.** There is no branch, diff or pull request, so nobody sees what the agent changed. The docs show only Autosaved and Trash, so a bad edit may not be undoable. Uploaded files usually become an unstructured dataset that changes by transaction, and it is not confirmed that AI FDE can read or edit them in place. Compass does not preview or edit Markdown out of the box (not confirmed in the docs). Checks, and so the gates, run only in a repository. The skills assume branches, commits and Checks.
+- **Why a Code Repository.** Branches and pull requests give review, history lets you revert, Checks can enforce the gates (situations 2 to 4), and a split-pane Markdown preview helps reviewers (right-click the file tab, then Split, then Toggle render Markdown). AI FDE proposes its changes as pull requests.
+- **No repository yet.** Create one only for specs, holding just `openspec/` (`docs/multi-repo.md` describes a spec home). Not confirmed that Foundry allows a repository with no code template.
 
 | Content | Put it in | Why |
 | --- | --- | --- |
-| `openspec/` (specs, changes, glossary, `INDEX.md`, rulebook) | **A.** A Code Repository (recommended) | Markdown, history, branches, pull request review, and Checks if you add a gate (situations 2 to 4) |
-| `openspec/` | **B.** A Compass folder of uploaded files | Works with no repository. No diff, no branch, no gate: situation 1 only. Set `Branch: none` in the context block (README) |
+| `openspec/` (specs, changes, glossary, `INDEX.md`, rulebook) | A Code Repository | Review, history, Markdown, Checks |
 | The four skills | Pasted into AIP skills, saved in a Compass folder | Compass holds the saved skill, not a `.md` file. The `.md` files in `core/aip-skills/` stay the source of truth in Git |
 | Company policy documents | Wherever the owners keep them | Digest them into `openspec/rulebook/` (`docs/rulebook.md`) |
 
 Implications:
 
-- In A, anyone who reviews or edits a spec, or a rulebook row, needs Code Repository access and a pull request. In B they need access to the Compass folder. Data governance and cloud security may not have it. Give them read access, or send them a rendered copy.
+- Anyone who reviews or edits a spec, or a rulebook row, needs Code Repository access and a pull request. Data governance and cloud security may not have it. Give them read access, or send them a rendered copy.
 - Notepad is a rich-text editor for people. It is not a store for these files: no branches, no review, no checks, and an assistant cannot read it as a file. Use it for readable summaries if you like, never as the source.
-- A copy of the glossary or rulebook outside the repository goes stale. Keep one copy, in the repository or the Compass folder.
+- A copy of the glossary or rulebook outside the repository goes stale. Keep one copy, in the repository.
 
 ## How the skills behave
 

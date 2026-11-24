@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.16.0-foundry.10 - 2026-11-24
+
+The bundle, the schema and the artifact graph did not change.
+
+- `openspec/` belongs in a Code Repository, never a Compass folder (no branch, diff, review or undo; no Checks; editing by AI FDE unconfirmed). Compass holds only the saved skills. Removed the Compass-folder option and the `Branch: none` override added after foundry.9. `docs/ai-fde.md` lists the reasons, the Markdown preview tip for reviewers, and a spec-only repository for teams with none.
+
 ## 1.16.0-foundry.9 - 2026-11-24
 
 The bundle, the schema and the artifact graph did not change.

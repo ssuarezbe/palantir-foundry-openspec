@@ -35,17 +35,21 @@ Use it on a repository that already works and has no specs. It writes the baseli
 Load the OpenSpec Explore skill. Read-only for code. Do not create a change.
 This repository has working code and no specs. The kit is in openspec/.
 
+Templates and rules: openspec/schemas/foundry-spec-driven/ holds schema.yaml (the
+instructions per artifact) and templates/ (proposal.md, open-questions.md, spec.md,
+design.md, ontology.md, logic.md, tasks.md). Open the template for every file you write
+and keep its headers exactly: the checks read them.
+
 Read first: openspec/config.yaml, openspec/ontology-design.md, openspec/rulebook/README.md.
 Then read the code in <folders, e.g. functions-typescript/src, transforms-python/src>.
 
 Write only what the code shows. Mark any guess "unconfirmed". Never invent rules,
-owners or classifications. Write these files:
+owners or classifications. Write these files (use templates/spec.md for specs):
 1. openspec/glossary.md: one row per business concept, with a definition.
 2. openspec/specs/<capability>/spec.md, one per capability: Purpose of at least 50
    characters, requirements with SHALL, GIVEN/WHEN/THEN scenarios, an `Ontology:` line.
 3. openspec/INDEX.md: a Capabilities row per spec, a Resources row per API name
    (object type, link type, action, function, dataset, automation).
-4. openspec/ontology.json: the API names you found, if that file is empty.
 
 Do not write change artifacts now. Later changes hold seven: proposal, open-questions,
 specs, design, ontology, logic, tasks.
@@ -60,10 +64,15 @@ Use it for new work. The spec files are the plan, and the code follows `tasks.md
 Load the OpenSpec Explore skill, then Propose. We build <feature, in business words>.
 Use OpenSpec as the build plan. The kit is in openspec/. Work on a branch.
 
+Templates and rules: openspec/schemas/foundry-spec-driven/ holds schema.yaml (the
+instructions per artifact) and templates/ (proposal.md, open-questions.md, spec.md,
+design.md, ontology.md, logic.md, tasks.md). Open the template for every file you write
+and keep its headers exactly: the checks read them.
+
 Read first: openspec/INDEX.md, openspec/glossary.md, openspec/rulebook/README.md,
 openspec/ontology-design.md, openspec/config.yaml. Name what exists and which rules apply.
 
-Create openspec/changes/<kebab-case-name>/ with all seven artifacts, in this order:
+Create openspec/changes/<kebab-case-name>/ (with .openspec.yaml) and all seven artifacts, in this order:
 1. proposal.md  2. open-questions.md  3. specs/<capability>/spec.md  4. design.md
 5. ontology.md  6. logic.md  7. tasks.md
 Rules: glossary terms in specs, Ontology resources by API name, GIVEN/WHEN/THEN scenarios,

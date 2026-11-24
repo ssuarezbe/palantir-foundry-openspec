@@ -29,60 +29,58 @@ Save `core/aip-skills/` as skills in a Compass folder and copy `core/project-tem
 
 ### Template 1: existing code to OpenSpec
 
-Use it on a repository that already works and has no specs. It writes the baseline, not a change.
+Use it on a repository that already works and has no specs. It writes the baseline main specs, not a change. Do one area per prompt.
 
 ```text
-Load the OpenSpec Explore skill. Read-only for code. Do not create a change.
-This repository has working code and no specs. The kit is in openspec/.
+First say which OpenSpec skills you loaded. If Explore is not one, stop.
+Use OpenSpec Explore to read. This task overrides its "do not write" rule for the files
+listed below only. Write no code and create no change. The kit is in openspec/. Work on a branch.
 
-Templates and rules: openspec/schemas/foundry-spec-driven/ holds schema.yaml (the
-instructions per artifact) and templates/ (proposal.md, open-questions.md, spec.md,
-design.md, ontology.md, logic.md, tasks.md). Open the template for every file you write
-and keep its headers exactly: the checks read them.
-
-Read first: openspec/config.yaml, openspec/ontology-design.md, openspec/rulebook/README.md.
-Then read the code in <folders, e.g. functions-typescript/src, transforms-python/src>.
-
+Read: openspec/config.yaml, openspec/ontology-design.md, openspec/rulebook/README.md.
+Then read the code in <area, e.g. functions-typescript/src/shipments>.
 Write only what the code shows. Mark any guess "unconfirmed". Never invent rules,
-owners or classifications. Write these files (use templates/spec.md for specs):
-1. openspec/glossary.md: one row per business concept, with a definition.
-2. openspec/specs/<capability>/spec.md, one per capability: Purpose of at least 50
-   characters, requirements with SHALL, GIVEN/WHEN/THEN scenarios, an `Ontology:` line.
-3. openspec/INDEX.md: a Capabilities row per spec, a Resources row per API name
-   (object type, link type, action, function, dataset, automation).
+owners or classifications.
 
-Do not write change artifacts now. Later changes hold seven: proposal, open-questions,
-specs, design, ontology, logic, tasks.
-Finish with: the files you wrote, and a list of what a person must confirm.
+Write:
+1. openspec/glossary.md: one row per business concept, with a definition. Keep its
+   headers (openspec/glossary.md already has them).
+2. openspec/specs/<capability>/spec.md, one per capability, in main-spec form:
+   `# <capability> Specification`, `## Purpose` (50+ characters), `## Requirements`,
+   then `### Requirement:` blocks with SHALL, an `Ontology:` line and
+   `#### Scenario:` blocks with GIVEN, one WHEN and THEN. No ADDED/MODIFIED headings.
+   (Do not copy templates/spec.md: that is the change form.)
+3. openspec/INDEX.md: a Capabilities row per spec, a Resources row per API name
+   (object type, link type, action, function, dataset, automation), then set Last audited.
+
+Finish with: the files you wrote, and what a person must confirm.
 ```
+
+Changes later hold seven artifacts (below). Review the baseline, then commit.
 
 ### Template 2: OpenSpec as the build plan
 
-Use it for new work. The spec files are the plan, and the code follows `tasks.md`.
+Use it for new work. The spec files are the plan, and the code follows `tasks.md`. If the idea is still unclear, first run `Load OpenSpec Explore. I want <idea>. Read INDEX.md, the glossary and the rulebook, and tell me what exists and which rules apply.`
 
 ```text
-Load the OpenSpec Explore skill, then Propose. We build <feature, in business words>.
-Use OpenSpec as the build plan. The kit is in openspec/. Work on a branch.
+First say which OpenSpec skills you loaded. If Propose is not one, stop.
+Load OpenSpec Propose. We build <feature, in business words>. Use OpenSpec as the build
+plan. The kit is in openspec/. Work on a branch. Write no code.
+Follow the skill. This list is a checklist, not a replacement for it.
 
-Templates and rules: openspec/schemas/foundry-spec-driven/ holds schema.yaml (the
-instructions per artifact) and templates/ (proposal.md, open-questions.md, spec.md,
-design.md, ontology.md, logic.md, tasks.md). Open the template for every file you write
-and keep its headers exactly: the checks read them.
+Templates and rules: openspec/schemas/foundry-spec-driven/ holds schema.yaml and
+templates/. Open the template for every file you write and keep its headers exactly:
+the checks read them.
 
-Read first: openspec/INDEX.md, openspec/glossary.md, openspec/rulebook/README.md,
-openspec/ontology-design.md, openspec/config.yaml. Name what exists and which rules apply.
-
-Create openspec/changes/<kebab-case-name>/ (with .openspec.yaml) and all seven artifacts, in this order:
+Create openspec/changes/<kebab-case-name>/ with .openspec.yaml and all seven artifacts:
 1. proposal.md  2. open-questions.md  3. specs/<capability>/spec.md  4. design.md
 5. ontology.md  6. logic.md  7. tasks.md
-Rules: glossary terms in specs, Ontology resources by API name, GIVEN/WHEN/THEN scenarios,
-a `classification:` line per object type and dataset, a Rulebook review table in
-design.md citing rule IDs, a `Verify:` line on every task. Add a row for this change
-to the In flight table in openspec/INDEX.md.
+Include: glossary terms in specs, Ontology resources by API name, GIVEN/WHEN/THEN
+scenarios, a `classification:` line per object type and dataset, a Rulebook review table
+in design.md citing rule IDs, a `Verify:` line on every task, and an In flight row in
+openspec/INDEX.md.
 If a question blocks, mark it "yes" in open-questions.md, do not write tasks.md,
 and list the questions for me.
 Finish with: the files in the change folder, and which of the seven are missing.
-Write no code.
 ```
 
 Then answer the questions in `open-questions.md`, ask Propose to finish `tasks.md`, and continue with these short prompts, each with its skill loaded:

@@ -23,63 +23,64 @@ Every situation uses the same files (`core/`). They differ in what checks the sp
 
 Situations combine. The release zip has `drop-in/`, one ready folder per situation to copy over your repository root. Not sure which you are? Commit `drop-in/probe/tests/probe.test.ts` alone, read the Checks log, then delete it. A filled-in change is in `docs/example/`.
 
-## Examples with AI FDE only
+## Prompt templates for AI FDE only
 
-Save `core/aip-skills/` as skills in a Compass folder and copy `core/project-template/openspec/` into your repository (`docs/ai-fde.md`). Markdown lives only in the Code Repository, not in Compass or Notepad (`docs/ai-fde.md`). Then use a prompt below. Neither is tested with a model.
+Save `core/aip-skills/` as skills in a Compass folder and copy `core/project-template/openspec/` into your repository on a branch (`docs/ai-fde.md`). Markdown lives only in the Code Repository, not in Compass or Notepad. AI FDE tends to skip artifacts it is not told about, so each template names every file in its first prompt. Replace the `<...>` parts. Neither is tested with a model: a person reviews what it writes.
 
-### Prompt: document existing code (start from a repository that already works)
+### Template 1: existing code to OpenSpec
 
-The kit has no skill for this. The prompt below uses the Explore skill to read, then asks AI FDE to write the baseline files by hand. Not tested with a model: review every file it writes.
-
-```text
-Load the OpenSpec Explore skill. This repository already has working code and no specs.
-The kit is in openspec/ (copied from core/project-template/). Do not create a change.
-
-1. Read openspec/config.yaml, openspec/ontology-design.md and openspec/rulebook/README.md.
-2. Read the code under <folders, e.g. functions-typescript/src, transforms-python/src>.
-   List the object types, link types, actions, functions and datasets you find, by API name.
-   Say which you could not confirm from the code.
-3. Write these, using only what the code shows:
-   - openspec/glossary.md: one row per business concept, with a definition.
-   - openspec/specs/<capability>/spec.md: one per capability. A Purpose of at least 50
-     characters, requirements, GIVEN/WHEN/THEN scenarios, and an `Ontology:` line.
-   - openspec/INDEX.md: one Resources row per API name, and one Capabilities row each.
-4. Mark every guess "unconfirmed". Do not invent rules, owners or classifications.
-5. End with a list of what I must confirm. Do not edit code.
-```
-
-Then commit on a branch, have a person confirm the "unconfirmed" items, and load Propose for the first real change.
-
-### Prompt: write a new feature with AI FDE only
-
-Run the four skills in order. Start each in a new chat, so the repository files carry the context.
+Use it on a repository that already works and has no specs. It writes the baseline, not a change.
 
 ```text
-1. Load OpenSpec Explore.
-   "I want <feature, in business words>. Read openspec/INDEX.md, the glossary and the
-   rulebook. Tell me what exists, what overlaps and which rules apply. Write nothing."
+Load the OpenSpec Explore skill. Read-only for code. Do not create a change.
+This repository has working code and no specs. The kit is in openspec/.
 
-2. Load OpenSpec Propose.
-   "Create the change <kebab-case-name> for what we just discussed. Write the artifacts in
-   order: proposal, open-questions, specs, design, ontology, logic, tasks. Cite rulebook
-   rule IDs in the Rulebook review. Stop at tasks.md if a blocking question is open and
-   list the questions for me."
+Read first: openspec/config.yaml, openspec/ontology-design.md, openspec/rulebook/README.md.
+Then read the code in <folders, e.g. functions-typescript/src, transforms-python/src>.
 
-   Answer the questions in openspec/changes/<name>/open-questions.md. Commit. Ask Propose
-   to finish tasks.md.
+Write only what the code shows. Mark any guess "unconfirmed". Never invent rules,
+owners or classifications. Write these files:
+1. openspec/glossary.md: one row per business concept, with a definition.
+2. openspec/specs/<capability>/spec.md, one per capability: Purpose of at least 50
+   characters, requirements with SHALL, GIVEN/WHEN/THEN scenarios, an `Ontology:` line.
+3. openspec/INDEX.md: a Capabilities row per spec, a Resources row per API name
+   (object type, link type, action, function, dataset, automation).
+4. openspec/ontology.json: the API names you found, if that file is empty.
 
-3. Load OpenSpec Apply.
-   "Implement openspec/changes/<name>/tasks.md. Do one task at a time, run its Verify
-   line and tick it off. Follow the Rulebook review. Stop and ask if a task needs
-   something the artifacts do not say."
-
-4. Load OpenSpec Archive.
-   "Archive <name>. Check the Rulebook review rows still match what was built, update
-   the main specs, the glossary and openspec/INDEX.md, then move the change to
-   changes/archive/."
+Do not write change artifacts now. Later changes hold seven: proposal, open-questions,
+specs, design, ontology, logic, tasks.
+Finish with: the files you wrote, and a list of what a person must confirm.
 ```
 
-Without a gate (situation 1), review the change with the list in `docs/ai-fde.md` before step 3 and before you merge.
+### Template 2: OpenSpec as the build plan
+
+Use it for new work. The spec files are the plan, and the code follows `tasks.md`.
+
+```text
+Load the OpenSpec Explore skill, then Propose. We build <feature, in business words>.
+Use OpenSpec as the build plan. The kit is in openspec/. Work on a branch.
+
+Read first: openspec/INDEX.md, openspec/glossary.md, openspec/rulebook/README.md,
+openspec/ontology-design.md, openspec/config.yaml. Name what exists and which rules apply.
+
+Create openspec/changes/<kebab-case-name>/ with all seven artifacts, in this order:
+1. proposal.md  2. open-questions.md  3. specs/<capability>/spec.md  4. design.md
+5. ontology.md  6. logic.md  7. tasks.md
+Rules: glossary terms in specs, Ontology resources by API name, GIVEN/WHEN/THEN scenarios,
+a `classification:` line per object type and dataset, a Rulebook review table in
+design.md citing rule IDs, a `Verify:` line on every task. Add a row for this change
+to the In flight table in openspec/INDEX.md.
+If a question blocks, mark it "yes" in open-questions.md, do not write tasks.md,
+and list the questions for me.
+Finish with: the files in the change folder, and which of the seven are missing.
+Write no code.
+```
+
+Then answer the questions in `open-questions.md`, ask Propose to finish `tasks.md`, and continue with these short prompts, each with its skill loaded:
+- `Load OpenSpec Apply. Implement openspec/changes/<name>/tasks.md one task at a time, run each Verify line, tick it off, follow the Rulebook review. Stop if a task needs something the artifacts do not say.`
+- `Load OpenSpec Archive. Archive <name>: check the Rulebook review still matches what was built, update the main specs, the glossary and INDEX.md, move the change to openspec/changes/archive/.`
+
+Without a gate (situation 1), review the change with the list in `docs/ai-fde.md` before Apply and before you merge.
 
 ## Guides
 

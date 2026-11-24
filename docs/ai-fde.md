@@ -16,7 +16,7 @@ Not tested here: everything in this guide. The menu names below follow the build
 4. Open Manage skill set. Add the four skills to one skill set named `OpenSpec`.
 5. In AI FDE, choose Load skills and pick the `OpenSpec` skill set.
 6. Optional: make a pre-fill link that opens AI FDE on your Code Repository branch with the skill set loaded. Share it with the team.
-7. Prepare the repository: on a branch, add `openspec/` from `core/project-template/openspec/`. The skills expect `openspec/config.yaml` and `openspec/glossary.md`.
+7. Prepare the repository: on a branch, add `openspec/` from `core/project-template/openspec/`. The skills expect `openspec/config.yaml` and `openspec/glossary.md`. A person does this: nothing in Foundry holds the kit. AI FDE sees only what is added to the chat, so in each chat add the repository link and the branch as context, then paste the context block from the README.
 8. Work in this order: Explore, Propose, Apply, Archive. Each skill tells the assistant to use a branch, never commit to main and read Checks after each commit.
 9. Update a skill when the kit changes: repeat step 2 with Save as over the old one.
 
@@ -63,7 +63,7 @@ Items 1 to 4 and the index names in item 9 are what the automatic checks apply i
 ## What to confirm in Foundry
 
 - The menu names in step 2 to 6 in your enrolment.
-- Any size limit on a skill. The longest skill here is 139 lines.
+- Any size limit on a skill. The longest skill here is 144 lines.
 - That AI FDE can read Checks results and the commit's failing file and line.
 - That AI FDE can move a folder and edit many files in one commit (Archive needs it). If it cannot, do the archive step by hand.
 - Whether AI FDE can reach the Ontology tools the Explore skill names, or needs `openspec/ontology.json`.

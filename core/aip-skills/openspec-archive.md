@@ -7,6 +7,8 @@ Finish a change. Merge its delta specs into the main specs, then move the change
 
 ## Before you start
 
+Open `openspec/config.yaml` first. If you cannot open it, stop. Say what you tried and that the user must add the Code Repository and branch as context. Do not ask the user to paste files and do not rebuild them from memory.
+
 1. Work on a branch of the Code Repository. Never commit to main.
 2. Pick the change.
    - Use the name the user gave.

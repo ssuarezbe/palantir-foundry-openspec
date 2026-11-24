@@ -15,6 +15,8 @@ OpenSpec keeps specs in the `openspec/` folder of the Code Repository. Every pat
 
 ## Steps
 
+Open `openspec/config.yaml` first. If you cannot open it, stop. Say what you tried and that the user must add the Code Repository and branch as context. Do not ask the user to paste files and do not rebuild them from memory.
+
 1. Read `openspec/config.yaml`. Note the `context:` and `rules:` text. They override your defaults.
 2. Read `openspec/INDEX.md`: the map of capabilities, Foundry resources and open changes. Follow its pointers instead of searching. Then read `openspec/glossary.md`. Note each term, the Ontology resources (object, link and action types, one or several) that represent it, and its forbidden synonyms.
 3. Read `openspec/rulebook/README.md` and the rows that fit the idea (skip `Example:` rows). Name the rules that will bind it, and any approval it will need. Then read `openspec/ontology-design.md`. Use it to challenge the idea: one entity per object type, real relationships, no anti-patterns.

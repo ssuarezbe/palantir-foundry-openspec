@@ -7,6 +7,8 @@ Create one change with all its artifacts: proposal, specs, design, Foundry model
 
 ## Before you start
 
+Open `openspec/config.yaml` first. If you cannot open it, stop. Say what you tried and that the user must add the Code Repository and branch as context. Do not ask the user to paste files and do not rebuild them from memory.
+
 1. Work on a branch of the Code Repository. If you are on main, make a branch first. Never commit to main.
 2. Read `openspec/config.yaml`. Follow its `context:` and `rules:`.
 3. Read `openspec/INDEX.md` (the map), then `openspec/glossary.md`. Use every term verbatim. Never use a forbidden synonym.

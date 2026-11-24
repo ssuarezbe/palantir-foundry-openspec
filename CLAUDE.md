@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Built (version `1.16.0-foundry.8`, see `CHANGELOG.md`). `BUILD_PROMPT.md` is the original build spec; the layout below replaces its layout (it was regrouped by audience in `foundry.4`).
 
-Layout: `core/` (what every team copies), `addons/` (per-environment), `maintainer/` (build, test, provenance; not in the release zip), `docs/` (six guides). Top level also has `README.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `THIRD_PARTY_NOTICES.md`.
+Layout: `core/` (what every team copies), `addons/` (per-environment), `maintainer/` (build, test, provenance; not in the release zip), `docs/` (eight guides). Top level also has `README.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `THIRD_PARTY_NOTICES.md`.
 
 Commands:
 - `maintainer/tests/run-all.sh` — every check, offline. `--no-jest` skips the Jest part. Jest needs `maintainer/scripts/setup-test-env.sh` once on a connected machine (installs into the gitignored `maintainer/tests/jest-env/node_modules`).

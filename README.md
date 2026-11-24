@@ -27,6 +27,19 @@ Situations combine. The release zip has `drop-in/`, one ready folder per situati
 
 Save `core/aip-skills/` as skills in a Compass folder and copy `core/project-template/openspec/` into your repository on a branch (`docs/ai-fde.md`). Markdown lives only in the Code Repository, not in Compass or Notepad. AI FDE tends to skip artifacts it is not told about, so each template names every file in its first prompt. Replace the `<...>` parts. Neither is tested with a model: a person reviews what it writes.
 
+### Prompt 0: preflight (run once, first)
+
+```text
+Do not write anything. Report:
+1. Which OpenSpec skills you loaded (Explore, Propose, Apply, Archive). List any missing.
+2. Whether these exist in openspec/: config.yaml, INDEX.md, glossary.md, ontology-design.md,
+   rulebook/, schemas/foundry-spec-driven/ (schema.yaml and seven templates), specs/, changes/.
+3. Whether glossary.md and rulebook/ hold only `Example:` rows (then they are not filled in yet).
+4. Whether you can read Checks results and the Ontology tools, or need openspec/ontology.json.
+5. The branch you are on. If it is main, say so.
+End with "Ready" or the list of what to fix.
+```
+
 ### Template 1: existing code to OpenSpec
 
 Use it on a repository that already works and has no specs. It writes the baseline main specs, not a change. Do one area per prompt.
@@ -83,11 +96,15 @@ and list the questions for me.
 Finish with: the files in the change folder, and which of the seven are missing.
 ```
 
-Then answer the questions in `open-questions.md`, ask Propose to finish `tasks.md`, and continue with these short prompts, each with its skill loaded:
-- `Load OpenSpec Apply. Implement openspec/changes/<name>/tasks.md one task at a time, run each Verify line, tick it off, follow the Rulebook review. Stop if a task needs something the artifacts do not say.`
-- `Load OpenSpec Archive. Archive <name>: check the Rulebook review still matches what was built, update the main specs, the glossary and INDEX.md, move the change to openspec/changes/archive/.`
+Then continue with short prompts, each with its skill loaded:
+- **Answer.** Answer the rows in `openspec/changes/<name>/open-questions.md`, commit, then `Load OpenSpec Propose. Finish tasks.md for <name>.`
+- **Review (before Apply, and before merge).** Without a gate, nothing else checks the files:
+  `Do not edit. Review openspec/changes/<name>/ against the review list in docs/ai-fde.md (items 1 to 10) and the checklists in the Propose skill. For each item say pass or fail, with the file and line. Name the headers that differ from the templates, any forbidden synonym, any Ontology name you could not confirm, any blocking open row, and any task without a Verify line.`
+- **Apply.** `Load OpenSpec Apply. Implement openspec/changes/<name>/tasks.md one task at a time, run each Verify line, tick it off, follow the Rulebook review. Stop if a task needs something the artifacts do not say.`
+- **Archive.** `Load OpenSpec Archive. Archive <name>: check the Rulebook review still matches what was built, update the main specs, the glossary and INDEX.md, move the change to openspec/changes/archive/.`
+- **Resume, in any new chat.** `Do not edit. Read openspec/INDEX.md and list openspec/changes/ (skip archive/). For each open change give its stage (which of the seven files exist, tasks done of total, blocking open rows) and the next prompt I should run.`
 
-Without a gate (situation 1), review the change with the list in `docs/ai-fde.md` before Apply and before you merge.
+Start every chat afresh: the repository files carry the context, not the chat. Without a gate (situation 1), the Review prompt is a model's read, not a gate: a person still reads the change before merge.
 
 ## Guides
 

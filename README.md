@@ -105,6 +105,60 @@ The only requirement is Node on the PATH. OpenSpec declares Node 22.12 or newer;
 3. Load the OpenSpec Explore skill, then Propose. Commit.
 4. Read Checks and fix what they name. With no gate (situation 1), a person reviews with the list in `docs/ai-fde.md` before merge.
 
+#### Prompt: document existing code (start from a repository that already works)
+
+The kit has no skill for this. The prompt below uses the Explore skill to read, then asks AI FDE to write the baseline files by hand. Not tested with a model: review every file it writes.
+
+```text
+Load the OpenSpec Explore skill. This repository already has working code and no specs.
+The kit is in openspec/ (copied from core/project-template/). Do not create a change.
+
+1. Read openspec/config.yaml, openspec/ontology-design.md and openspec/rulebook/README.md.
+2. Read the code under <folders, e.g. functions-typescript/src, transforms-python/src>.
+   List the object types, link types, actions, functions and datasets you find, by API name.
+   Say which you could not confirm from the code.
+3. Write these, using only what the code shows:
+   - openspec/glossary.md: one row per business concept, with a definition.
+   - openspec/specs/<capability>/spec.md: one per capability. A Purpose of at least 50
+     characters, requirements, GIVEN/WHEN/THEN scenarios, and an `Ontology:` line.
+   - openspec/INDEX.md: one Resources row per API name, and one Capabilities row each.
+4. Mark every guess "unconfirmed". Do not invent rules, owners or classifications.
+5. End with a list of what I must confirm. Do not edit code.
+```
+
+Then commit on a branch, have a person confirm the "unconfirmed" items, and load Propose for the first real change.
+
+#### Prompt: write a new feature with AI FDE only
+
+Run the four skills in order. Start each in a new chat, so the repository files carry the context.
+
+```text
+1. Load OpenSpec Explore.
+   "I want <feature, in business words>. Read openspec/INDEX.md, the glossary and the
+   rulebook. Tell me what exists, what overlaps and which rules apply. Write nothing."
+
+2. Load OpenSpec Propose.
+   "Create the change <kebab-case-name> for what we just discussed. Write the artifacts in
+   order: proposal, open-questions, specs, design, ontology, logic, tasks. Cite rulebook
+   rule IDs in the Rulebook review. Stop at tasks.md if a blocking question is open and
+   list the questions for me."
+
+   Answer the questions in openspec/changes/<name>/open-questions.md. Commit. Ask Propose
+   to finish tasks.md.
+
+3. Load OpenSpec Apply.
+   "Implement openspec/changes/<name>/tasks.md. Do one task at a time, run its Verify
+   line and tick it off. Follow the Rulebook review. Stop and ask if a task needs
+   something the artifacts do not say."
+
+4. Load OpenSpec Archive.
+   "Archive <name>. Check the Rulebook review rows still match what was built, update
+   the main specs, the glossary and openspec/INDEX.md, then move the change to
+   changes/archive/."
+```
+
+Without a gate (situation 1), review the change with the list in `docs/ai-fde.md` before step 3 and before you merge.
+
 ## What a change contains
 
 The `foundry-spec-driven` schema gives every change these files. They live in `openspec/changes/<name>/`. Write `proposal.md` first. After it, `open-questions.md`, the specs, `design.md` and `ontology.md` can be written in any order. `logic.md` needs `ontology.md`. `tasks.md` needs all the others.

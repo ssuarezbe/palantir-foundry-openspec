@@ -25,7 +25,7 @@ Situations combine. The release zip has `drop-in/`, one ready folder per situati
 
 ## Examples with AI FDE only
 
-Save `core/aip-skills/` as skills in a Compass folder and copy `core/project-template/openspec/` into your repository (`docs/ai-fde.md`). Then use a prompt below. Neither is tested with a model.
+Save `core/aip-skills/` as skills in a Compass folder and copy `core/project-template/openspec/` into your repository (`docs/ai-fde.md`). Markdown lives only in the Code Repository, not in Compass or Notepad (`docs/ai-fde.md`). Then use a prompt below. Neither is tested with a model.
 
 ### Prompt: document existing code (start from a repository that already works)
 

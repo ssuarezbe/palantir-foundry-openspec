@@ -20,6 +20,22 @@ Not tested here: everything in this guide. The menu names below follow the build
 8. Work in this order: Explore, Propose, Apply, Archive. Each skill tells the assistant to use a branch, never commit to main and read Checks after each commit.
 9. Update a skill when the kit changes: repeat step 2 with Save as over the old one.
 
+## Where Markdown lives
+
+Foundry's Compass overview and Notepad overview do not say Markdown is supported, and we are told Compass does not store Markdown files out of the box; only Code Repositories do. Not confirmed in the docs: check your enrollment.
+
+| Content | Put it in | Why |
+| --- | --- | --- |
+| `openspec/` (specs, changes, glossary, `INDEX.md`, rulebook) | The Code Repository | The only place with Markdown, history, branches and Checks. AI FDE reads and writes it there |
+| The four skills | Pasted into AIP skills, saved in a Compass folder | Compass holds the saved skill, not a `.md` file. The `.md` files in `core/aip-skills/` stay the source of truth in Git |
+| Company policy documents | Wherever the owners keep them | Digest them into `openspec/rulebook/` (`docs/rulebook.md`) |
+
+Implications:
+
+- Anyone who reviews or edits a spec, or a rulebook row, needs Code Repository access and a pull request. Data governance and cloud security may not have it. Give them read access, or send them a rendered copy.
+- Notepad is a rich-text editor for people. It is not a store for these files: no branches, no review, no checks, and an assistant cannot read it as a file. Use it for readable summaries if you like, never as the source.
+- A copy of the glossary or rulebook outside the repository goes stale. Keep one copy, in the repository.
+
 ## How the skills behave
 
 - Explore reads the config, glossary, specs and open changes, and confirms each Ontology API name exists. It writes nothing.

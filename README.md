@@ -2,7 +2,7 @@
 
 Write down a Foundry change before you build it: why, the behavior, the Ontology types, actions and datasets it touches, and what is still unknown. An assistant writes the files, a person reviews them, then the assistant builds from them.
 
-This is an internal [OpenSpec](https://github.com/Fission-AI/OpenSpec) 1.16.0 kit for teams on Palantir Foundry with no npm access. It brings Foundry-specific templates, skills for AI FDE (no shell, no Node), a company rulebook slot, and an optional bundled CLI and checks. Version `1.16.0-foundry.8`, by Optivia Labs.
+This is an internal [OpenSpec](https://github.com/Fission-AI/OpenSpec) 1.16.0 kit for teams on Palantir Foundry with no npm access. It brings Foundry-specific templates, skills for AI FDE (no shell, no Node), a company rulebook slot, and an optional bundled CLI and checks. Version `1.16.0-foundry.9`, by Optivia Labs.
 
 Not an official OpenSpec or Palantir product. "Palantir" and "Foundry" are trademarks of Palantir Technologies Inc. OpenSpec is MIT licensed (`THIRD_PARTY_NOTICES.md`).
 

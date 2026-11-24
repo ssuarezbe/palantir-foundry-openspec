@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.16.0-foundry.9 - 2026-11-24
+
+The bundle, the schema and the artifact graph did not change.
+
+- README cut from 343 to about 130 lines. Detail moved to `docs/how-it-works.md`, `docs/gherkin.md` and `maintainer/README.md`.
+- AI FDE prompts: a context block (repository, branch and skills folder as variables, plus the file map), Step 0, Prompt 0 (preflight), Template 1 (existing code to baseline specs), Template 2 (a change as the build plan), and Review, Apply, Archive and Resume prompts.
+- The four skills open `openspec/config.yaml` first and stop, saying what context is missing, if they cannot. They no longer invite the user to paste files.
+- `docs/ai-fde.md`: where Markdown lives (Code Repository, not Compass or Notepad) and that AI FDE sees only what is added to the chat.
+
 ## 1.16.0-foundry.8 - 2026-11-21
 
 The bundle and the artifact graph did not change.

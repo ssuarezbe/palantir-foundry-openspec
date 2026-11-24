@@ -22,19 +22,20 @@ Not tested here: everything in this guide. The menu names below follow the build
 
 ## Where Markdown lives
 
-Foundry's Compass overview and Notepad overview do not say Markdown is supported, and we are told Compass does not store Markdown files out of the box; only Code Repositories do. Not confirmed in the docs: check your enrollment.
+Foundry's Compass overview and Notepad overview do not say Markdown is supported, and we are told Compass does not preview or edit Markdown out of the box. Not confirmed in the docs: check your enrollment. Two places hold `openspec/`:
 
 | Content | Put it in | Why |
 | --- | --- | --- |
-| `openspec/` (specs, changes, glossary, `INDEX.md`, rulebook) | The Code Repository | The only place with Markdown, history, branches and Checks. AI FDE reads and writes it there |
+| `openspec/` (specs, changes, glossary, `INDEX.md`, rulebook) | **A.** A Code Repository (recommended) | Markdown, history, branches, pull request review, and Checks if you add a gate (situations 2 to 4) |
+| `openspec/` | **B.** A Compass folder of uploaded files | Works with no repository. No diff, no branch, no gate: situation 1 only. Set `Branch: none` in the context block (README) |
 | The four skills | Pasted into AIP skills, saved in a Compass folder | Compass holds the saved skill, not a `.md` file. The `.md` files in `core/aip-skills/` stay the source of truth in Git |
 | Company policy documents | Wherever the owners keep them | Digest them into `openspec/rulebook/` (`docs/rulebook.md`) |
 
 Implications:
 
-- Anyone who reviews or edits a spec, or a rulebook row, needs Code Repository access and a pull request. Data governance and cloud security may not have it. Give them read access, or send them a rendered copy.
+- In A, anyone who reviews or edits a spec, or a rulebook row, needs Code Repository access and a pull request. In B they need access to the Compass folder. Data governance and cloud security may not have it. Give them read access, or send them a rendered copy.
 - Notepad is a rich-text editor for people. It is not a store for these files: no branches, no review, no checks, and an assistant cannot read it as a file. Use it for readable summaries if you like, never as the source.
-- A copy of the glossary or rulebook outside the repository goes stale. Keep one copy, in the repository.
+- A copy of the glossary or rulebook outside the repository goes stale. Keep one copy, in the repository or the Compass folder.
 
 ## How the skills behave
 

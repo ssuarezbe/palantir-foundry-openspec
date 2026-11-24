@@ -27,24 +27,41 @@ Situations combine. The release zip has `drop-in/`, one ready folder per situati
 
 AI FDE only sees what is added to the chat ([docs](https://www.palantir.com/docs/foundry/ai-fde/navigation/)). It cannot find `openspec/` by itself, and nothing in Foundry has the kit until a person puts it there. If you skip Step 0, it asks you to paste files.
 
+**Where `openspec/` lives.** Both places work. A is more robust.
+
+| | A. Code Repository (recommended) | B. Compass folder |
+| --- | --- | --- |
+| What it is | A repository with branches and commits | A folder of uploaded files |
+| Branch, diff, pull request | Yes. A reviewer sees every change and can undo it | None. A person reviews the files, and keeps a copy elsewhere before big edits |
+| Gates (Checks) | Possible: situations 2 to 4 in `docs/setup.md` enforce the open-questions gate, the Rulebook review and the index checks | None. Situation 1 only: the Review prompt and the list in `docs/ai-fde.md` |
+| Markdown | Stored and readable | Stored, but Compass does not preview or edit it out of the box (not confirmed in the docs) |
+| Can AI FDE read the files? | Once the repository is in the chat. Prompt 0 confirms it | Once the folder is in the chat. Prompt 0 confirms it |
+| Skill rules on branch, commit and Checks | Apply as written | Switched off by the context block (`Branch: none`) |
+
 **Step 0, once per project and once per chat**
-1. A person commits `openspec/` (from `core/project-template/openspec/`, or `drop-in/situation-1/`) to a branch of a Code Repository.
-2. Save `core/aip-skills/` as skills in a Compass folder and put them in one skill set, `OpenSpec` (`docs/ai-fde.md`).
-3. In a new AI FDE chat, add the repository and the branch as context (drag the repository link in, add the branch from the ribbon). Not confirmed that a repository link can be attached: Prompt 0 shows it.
+1. A person puts `openspec/` (from `core/project-template/openspec/`, or `drop-in/situation-1/`) in place.
+   - A: commit it to a branch of a Code Repository.
+   - B: upload the whole folder, structure intact, to a Compass folder, for example `/Acme/Logistics/OpenSpec spec home`.
+2. Save `core/aip-skills/` as skills in a Compass folder and put them in one skill set, `OpenSpec` (`docs/ai-fde.md`). That folder holds only the saved skills, not the spec files.
+3. In a new AI FDE chat, add the repository and branch (A) or the folder (B) as context: drag its link in, and for A add the branch from the ribbon. Not confirmed that a repository or folder link can be attached: Prompt 0 shows it.
 4. Paste the context block, then a prompt below.
+
+In B, nothing enforces the open-questions gate or the Rulebook review, and nobody sees a diff. Run the Review prompt before every Apply, read each file the agent changed, and move to A when a gate is needed. Neither place is tested in Foundry.
 
 **Context block** (replace the `<...>` values, keep the rest; the Compass paths are the variables)
 
 ```text
 CONTEXT
-Repository: <COMPASS_REPO: Compass path or link, e.g. /Acme/Logistics/shipments-functions>
-Branch:     <BRANCH: a feature branch, never main>
+Repository: <COMPASS_REPO: Code Repository or Compass folder, path or link, e.g. /Acme/Logistics/shipments-functions>
+Branch:     <BRANCH: a feature branch, never main; write "none" for a Compass folder>
 Skill set:  OpenSpec (saved in <COMPASS_SKILLS_FOLDER, e.g. /Acme/Logistics/OpenSpec skills>)
 Spec home:  openspec/ at the root of the repository above
 
 Every path below is relative to that repository on that branch. Open openspec/config.yaml
 first. If you cannot open it, stop. Say what you tried and which context I must add
 (repository link, branch). Do not ask me to paste files. Do not rebuild them from memory.
+If Branch is none: there are no branches, commits or Checks. Skip those steps, edit files
+in place, and after each step list the files you changed so I can review them.
 
 openspec/
   config.yaml  INDEX.md  glossary.md  ontology-design.md

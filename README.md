@@ -27,7 +27,17 @@ Situations combine. The release zip has `drop-in/`, one ready folder per situati
 
 AI FDE only sees what is added to the chat ([docs](https://www.palantir.com/docs/foundry/ai-fde/navigation/)). It cannot find `openspec/` by itself, and nothing in Foundry has the kit until a person puts it there. If you skip Step 0, it asks you to paste files.
 
-**Where `openspec/` lives: a Code Repository, never a Compass folder.** Compass holds only the saved skills. A Compass folder of uploaded files has no branch, diff or review, no undo, no Checks and no Markdown preview, and it is not confirmed that AI FDE can edit those files. The skills assume branches, commits and Checks. A repository gives review, history, gates (situations 2 to 4 in `docs/setup.md`) and a split-pane Markdown preview for reviewers. No repository for this yet? Create one only for specs, holding just `openspec/`. Not confirmed that Foundry allows a repository with no code template.
+> **Do not put `openspec/` in a Compass folder. Use a Code Repository.** Compass holds only the saved skills.
+>
+> Why not Compass:
+> 1. **No review.** There is no branch, diff or pull request, so nobody sees what the agent changed.
+> 2. **No undo.** The docs show only Autosaved and Trash. A bad edit may be permanent.
+> 3. **No gates.** Checks run only in a repository, so the open-questions gate, the Rulebook review and the index checks cannot run.
+> 4. **Doubtful editing.** Uploaded files usually become an unstructured dataset that changes by transaction. It is not confirmed that AI FDE can read or edit them in place.
+> 5. **No Markdown.** Compass does not preview or edit Markdown out of the box (not confirmed in the docs).
+> 6. **The skills assume Git.** They say work on a branch, never commit to main and read Checks.
+>
+> Why a repository: review by pull request, history you can revert, Checks that can enforce the gates (situations 2 to 4 in `docs/setup.md`), and a split-pane Markdown preview for reviewers. No repository for this yet? Create one only for specs, holding just `openspec/`. Not confirmed that Foundry allows a repository with no code template.
 
 **Step 0, once per project and once per chat**
 1. A person commits `openspec/` (from `core/project-template/openspec/`, or `drop-in/situation-1/`) to a branch of a Code Repository.
